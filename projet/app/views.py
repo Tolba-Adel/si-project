@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from .models import fournisseur,client,employe,centre
-from .forms import clientForm,fournisseurForm,employeForm,centreForm
+from .models import fournisseur,client,employe,centre,matierePremiere
+from .forms import clientForm,fournisseurForm,employeForm,centreForm,matierePremiereForm
 
 #Home Page
 def index(request):
@@ -163,6 +163,43 @@ def supprimer_centre(request,pk):
         c.delete() 
         return redirect('liste_centres')
     return render(request,'magasin/centre/confirmDelete.html',{'centre':c})
+
+
+#Gestion Matiere Premiere
+def afficher_matierePremieres(request):
+    matierePremieres=matierePremiere.objects.all()
+    return render(request,"magasin/matierePremiere/matierePremiere.html",{'matierePremieres':matierePremieres})
+
+def ajouter_matierePremiere(request):
+    if request.method == "POST":
+        form=matierePremiereForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form=matierePremiereForm()
+            msg="Matière Première ajoutée avec succées"
+            return render(request,"magasin/matierePremiere/addMatierePremiere.html",{'form':form,"message":msg})
+    else:
+        form=matierePremiereForm()
+        msg=""
+        return render(request,"magasin/matierePremiere/addMatierePremiere.html",{"form":form,"message":msg})
+
+def modifier_matierePremiere(request,pk):
+    mp=matierePremiere.objects.get(id=pk)
+    if request.method == "POST":
+        form=matierePremiereForm(request.POST,instance=mp)
+        if form.is_valid():
+            form.save()
+            return redirect("liste_matierePremieres")
+    else:
+        form=matierePremiereForm(instance=mp)
+        return render(request,"magasin/matierePremiere/editMatierePremiere.html",{"form":form})
+
+def supprimer_matierePremiere(request,pk):
+    mp=get_object_or_404(matierePremiere,id=pk)
+    if request.method == 'POST':
+        mp.delete() 
+        return redirect('liste_matierePremieres')
+    return render(request,'magasin/matierePremiere/confirmDelete.html',{'matierePremiere':mp})
 
 
 

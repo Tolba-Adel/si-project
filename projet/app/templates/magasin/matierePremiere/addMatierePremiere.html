@@ -1,0 +1,9 @@
+<form method="POST">
+  {% csrf_token %} {{form.as_p}}
+  <input type="submit" value="Ajouter" />
+</form>
+<p>{{message}}</p>
+
+<a href="{% url 'liste_matierePremieres' %}">
+  <button>Liste Matière Premières</button>
+</a>

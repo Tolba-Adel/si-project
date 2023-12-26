@@ -50,11 +50,11 @@ class produit(models.Model):
 
 class matierePremiere(models.Model):
     # codeM=models.AutoField(primary_key=True)
-    nomM=models.CharField(max_length=50)
-    prix_achatM=models.FloatField(max_length=10)
-    prix_venteM=models.FloatField(max_length=10)
+    nomMP=models.CharField(max_length=50)
+    prix_achatMP=models.FloatField(max_length=10)
+    prix_venteMP=models.FloatField(max_length=10)
     def __str__(self):
-        return self.nomM
+        return self.nomMP
 
 # class achat(models.Model):
 #     # codeAchat=models.AutoField(primary_key=True)

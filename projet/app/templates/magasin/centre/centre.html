@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Centres</title>
+  </head>
+  <body>
+    <h1>Liste des Centres</h1>
+    {% if centres %}
+    <table border="1px">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Nom</th>
+        </tr>
+      </thead>
+      {% for c in centres %}
+      <tbody>
+        <tr>
+          <td>{{c.id}}</td>
+          <td>{{c.nomC}}</td>
+          <td>
+            <a href="{% url 'editC' c.id %}">Modifier</a>
+          </td>
+          <td>
+            <a href="{% url 'deleteC' c.id %}">Supprimer</a>
+          </td>
+        </tr>
+      </tbody>
+      {% endfor %}
+    </table>
+    {% else %}
+    <p>Aucun Centre a afficher</p>
+    {% endif %}
+
+    <a href="centre/ajouter">
+      <button>Ajouter un Centre</button>
+    </a>
+    <br />
+    <br />
+
+    <a href="magasin">
+      <button>Magasin</button>
+    </a>
+  </body>
+</html>

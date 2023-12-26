@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clients</title>
+  </head>
+  <body>
+    <h1>Liste des Clients</h1>
+    {% if clients %}
+    <table border="1px">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Adresse</th>
+          <th>Téléphone</th>
+          <th>Crédit</th>
+        </tr>
+      </thead>
+      {% for cl in clients %}
+      <tbody>
+        <tr>
+          <td>{{cl.id}}</td>
+          <td>{{cl.nomCl}}</td>
+          <td>{{cl.prenomCl}}</td>
+          <td>{{cl.adresseCl}}</td>
+          <td>{{cl.telephoneCl}}</td>
+          <td>{{cl.credit}}</td>
+          <td>
+            <a href="{% url 'editCl' cl.id %}">Modifier</a>
+          </td>
+          <td>
+            <a href="{% url 'deleteCl' cl.id %}">Supprimer</a>
+          </td>
+        </tr>
+      </tbody>
+      {% endfor %}
+    </table>
+    {% else %}
+    <p>Aucun Client a afficher</p>
+    {% endif %}
+
+    <a href="client/ajouter">
+      <button>Ajouter un Client</button>
+    </a>
+    <br />
+    <br />
+
+    <a href="magasin">
+      <button>Magasin</button>
+    </a>
+  </body>
+</html>

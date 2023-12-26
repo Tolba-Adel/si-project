@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Employes</title>
+  </head>
+  <body>
+    <h1>Liste des Employes</h1>
+    {% if employes %}
+    <table border="1px">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Adresse</th>
+          <th>Téléphone</th>
+          <th>Salaire journalier</th>
+          <th>Centre</th>
+        </tr>
+      </thead>
+      {% for e in employes %}
+      <tbody>
+        <tr>
+          <td>{{e.id}}</td>
+          <td>{{e.nomE}}</td>
+          <td>{{e.prenomE}}</td>
+          <td>{{e.adresseE}}</td>
+          <td>{{e.telephoneE}}</td>
+          <td>{{e.salaire_jour}}</td>
+          <td>{{e.centre}}</td>
+          <td>
+            <a href="{% url 'editE' e.id %}">Modifier</a>
+          </td>
+          <td>
+            <a href="{% url 'deleteE' e.id %}">Supprimer</a>
+          </td>
+        </tr>
+      </tbody>
+      {% endfor %}
+    </table>
+    {% else %}
+    <p>Aucun Employe a afficher</p>
+    {% endif %}
+
+    <a href="employe/ajouter">
+      <button>Ajouter un Employe</button>
+    </a>
+    <br />
+    <br />
+
+    <a href="magasin">
+      <button>Magasin</button>
+    </a>
+  </body>
+</html>

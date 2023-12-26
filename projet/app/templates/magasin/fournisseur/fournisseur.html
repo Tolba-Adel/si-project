@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fournisseurs</title>
+  </head>
+  <body>
+    <h1>Liste des Fournisseurs</h1>
+    {% if fournisseurs %}
+    <table border="1px">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Adresse</th>
+          <th>Téléphone</th>
+          <th>Solde</th>
+        </tr>
+      </thead>
+      {% for f in fournisseurs %}
+      <tbody>
+        <tr>
+          <td>{{f.id}}</td>
+          <td>{{f.nomF}}</td>
+          <td>{{f.prenomF}}</td>
+          <td>{{f.adresseF}}</td>
+          <td>{{f.telephoneF}}</td>
+          <td>{{f.solde}}</td>
+          <td>
+            <a href="{% url 'editF' f.id %}">Modifier</a>
+          </td>
+          <td>
+            <a href="{% url 'deleteF' f.id %}">Supprimer</a>
+          </td>
+        </tr>
+      </tbody>
+      {% endfor %}
+    </table>
+    {% else %}
+    <p>Aucun Fournisseur a afficher</p>
+    {% endif %}
+
+    <a href="fournisseur/ajouter">
+      <button>Ajouter un Fournisseur</button>
+    </a>
+    <br />
+    <br />
+
+    <a href="magasin">
+      <button>Magasin</button>
+    </a>
+  </body>
+</html>

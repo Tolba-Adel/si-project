@@ -9,8 +9,6 @@ urlpatterns = [
     path('centres',views.centres, name='centres'),
     path('tableauxDeBord',views.tableauxDeBord, name='TableauxDeBord'),
 
-    # path('magasin/AchatMatieres',views.achatMatieres,name='achatMatieres'),
-
     #Client
     path('client',views.afficher_clients,name='liste_clients'),
     path('client/ajouter',views.ajouter_client, name="addCl"),

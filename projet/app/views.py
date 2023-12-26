@@ -18,8 +18,13 @@ def tableauxDeBord(request):
 
 #Gestion Client
 def afficher_clients(request):
-    clients=client.objects.all()
-    return render(request,"magasin/client/client.html",{'clients':clients})
+    if request.method == "GET":
+        query = request.GET.get('recherche')
+        if query:
+            clients=client.objects.filter(nomCl__icontains=query)
+        else:
+            clients = client.objects.all()
+        return render(request,"magasin/client/client.html",{'clients':clients})
 
 def ajouter_client(request):
     if request.method == "POST":
@@ -56,8 +61,13 @@ def supprimer_client(request,pk):
 
 #Gestion Fournisseur
 def afficher_fournisseurs(request):
-    fournisseurs=fournisseur.objects.all()
-    return render(request,"magasin/fournisseur/fournisseur.html",{'fournisseurs':fournisseurs})
+    if request.method == "GET":
+        query = request.GET.get('recherche')
+        if query:
+            fournisseurs=fournisseur.objects.filter(nomF__icontains=query)
+        else:
+            fournisseurs=fournisseur.objects.all()
+        return render(request,"magasin/fournisseur/fournisseur.html",{'fournisseurs':fournisseurs})
 
 def ajouter_fournisseur(request):
     if request.method == "POST":
@@ -93,8 +103,13 @@ def supprimer_fournisseur(request,pk):
 
 #Gestion Employe
 def afficher_employes(request):
-    employes=employe.objects.all()
-    return render(request,"magasin/employe/employe.html",{'employes':employes})
+    if request.method == "GET":
+        query = request.GET.get('recherche')
+        if query:
+            employes=employe.objects.filter(nomE__icontains=query)
+        else:
+            employes=employe.objects.all()
+        return render(request,"magasin/employe/employe.html",{'employes':employes})
 
 def ajouter_employe(request):
     if request.method == "POST":
@@ -130,8 +145,13 @@ def supprimer_employe(request,pk):
 
 #Gestion Centre
 def afficher_centres(request):
-    centres=centre.objects.all()
-    return render(request,"magasin/centre/centre.html",{'centres':centres})
+    if request.method == "GET":
+        query = request.GET.get('recherche')
+        if query:
+            centres=centre.objects.filter(nomC__icontains=query)
+        else:
+            centres = centre.objects.all()
+        return render(request,"magasin/centre/centre.html",{'centres':centres})
 
 def ajouter_centre(request):
     if request.method == "POST":
@@ -167,8 +187,13 @@ def supprimer_centre(request,pk):
 
 #Gestion Matiere Premiere
 def afficher_matierePremieres(request):
-    matierePremieres=matierePremiere.objects.all()
-    return render(request,"magasin/matierePremiere/matierePremiere.html",{'matierePremieres':matierePremieres})
+    if request.method == "GET":
+        query = request.GET.get('recherche')
+        if query:
+            matierePremieres=matierePremiere.objects.filter(nomMP__icontains=query)
+        else:
+            matierePremieres=matierePremiere.objects.all()
+        return render(request,"magasin/matierePremiere/matierePremiere.html",{'matierePremieres':matierePremieres})
 
 def ajouter_matierePremiere(request):
     if request.method == "POST":

@@ -7,6 +7,14 @@
   </head>
   <body>
     <h1>Liste des Matière Premières</h1>
+
+    <form method="GET">
+      <label for="search">Entrez le nom de la matière première:</label>
+      <input type="text" name="recherche" id="search" />
+      <button type="submit">rechercher</button>
+    </form>
+    <br />
+
     {% if matierePremieres %}
     <table border="1px">
       <thead>

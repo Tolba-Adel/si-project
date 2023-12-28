@@ -1,21 +1,14 @@
-# Python-related
-*.pyc
+#Byte-compiled / optimized / DLL files
 __pycache__/
-
-# Django
-*.pyo
 *.pyc
+*.pyo
 *.pyd
-db.sqlite3
-media/
-*.pyc
-*.pyo
-__pycache__/
-*.pyc
-*.pyo
-__pycache__/
-*.pyc
-*.pyo
-__pycache__/
 
-# projet/db.sqlite3
+#Migrations
+migrations/
+
+#Database
+db.sqlite3
+
+#Static files
+static/

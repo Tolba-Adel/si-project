@@ -1,0 +1,25 @@
+<h1>Employé: {{employe.nomE}} {{employe.prenomE}}</h1>
+
+<form method="POST">
+  {% csrf_token %}
+  <label for="points">Points</label>
+  <input type="number" name="points" id="points" value="{{employe.points}}" />
+  <p>{{message}}</p>
+  <a
+    href=" {% url 'module_employe' centre_id=employe.centre.numeroC %}"
+    id="annuler"
+  >
+    <button>Annuler</button>
+  </a>
+  <input type="submit" value="Modifier" />
+</form>
+
+<script>
+  document
+    .getElementById("annuler")
+    .addEventListener("click", function (event) {
+      event.preventDefault();
+      window.location.href =
+        "{% url 'module_employe' centre_id=employe.centre.numeroC %}";
+    });
+</script>

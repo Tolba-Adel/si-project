@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Delete Demande Avance</title>
+  </head>
+  <body>
+    <h2>Confirmation de suppression</h2>
+    <p>
+      Vous êtes sur le point de supprimer la demande du
+      {{avanceSalaire.dateDemande}}
+    </p>
+    <p>Êtes-vous sûr de vouloir continuer ?</p>
+
+    <form method="post">
+      {% csrf_token %}
+      <input type="submit" value="Confirmer la suppression" />
+    </form>
+
+    <a href="{% url 'avanceSalaire' pk=avanceSalaire.employe.id %}">
+      <button>Annuler</button>
+    </a>
+  </body>
+</html>

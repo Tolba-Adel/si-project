@@ -1,0 +1,12 @@
+<form method="POST">
+  {% csrf_token %}
+  <label for="dateAbsence">Date Absence</label>
+  <input type="date" name="dateAbsence" id="dateAbsence" />
+  <br />
+  <input type="submit" value="Ajouter" />
+</form>
+<p>{{message}}</p>
+
+<a href="{% url 'absence' pk=employe_id %}">
+  <button>Liste Absences</button>
+</a>

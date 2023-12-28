@@ -29,13 +29,15 @@ class centreForm(forms.ModelForm):
         model = centre
         fields="__all__"
         labels = {
-            'nomC': 'Nom'
+            'nomC': 'Nom',
+            'numeroC':'Numéro'
         }
 
 class employeForm(forms.ModelForm):
     class Meta:
         model = employe
-        fields="__all__"
+        # fields="__all__"
+        exclude=['points']
         labels = {
             'nomE': 'Nom',
             'prenomE': 'Prénom',

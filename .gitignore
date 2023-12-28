@@ -1,2 +1,21 @@
+# Python-related
+*.pyc
+__pycache__/
 
-projet/db.sqlite3
+# Django
+*.pyo
+*.pyc
+*.pyd
+db.sqlite3
+media/
+*.pyc
+*.pyo
+__pycache__/
+*.pyc
+*.pyo
+__pycache__/
+*.pyc
+*.pyo
+__pycache__/
+
+# projet/db.sqlite3

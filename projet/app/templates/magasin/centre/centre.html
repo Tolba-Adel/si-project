@@ -21,6 +21,9 @@
         <tr>
           <th></th>
           <th>Nom</th>
+          <th>Numero</th>
+          <th></th>
+          <th></th>
         </tr>
       </thead>
       {% for c in centres %}
@@ -28,6 +31,7 @@
         <tr>
           <td>{{c.id}}</td>
           <td>{{c.nomC}}</td>
+          <td>{{c.numeroC}}</td>
           <td>
             <a href="{% url 'editC' c.id %}">Modifier</a>
           </td>
@@ -49,7 +53,7 @@
     <br />
 
     <a href="magasin">
-      <button>Magasin</button>
+      <button>retourner</button>
     </a>
   </body>
 </html>

@@ -1,7 +1,6 @@
 from django.db import models
 from datetime import datetime
 
-
 class client(models.Model):
     # codeCl=models.AutoField(primary_key=True)
     nomCl=models.CharField(max_length=50)
@@ -23,11 +22,17 @@ class fournisseur(models.Model):
         return f"{self.nomF} {self.prenomF}"
 
 class centre(models.Model):
+    centre_possibles=[
+        (1, '1'),
+        (2, '2'),
+        (3, '3')
+    ]
     # codeC=models.AutoField(primary_key=True)
     nomC=models.CharField(max_length=50)
+    numeroC=models.IntegerField(choices=centre_possibles,unique=True)
     # responsable=models.ForeignKey(employe,on_delete=models.SET_NULL,null=True)
     def __str__(self):
-        return self.nomC
+        return f"{self.numeroC}"
     
 class employe(models.Model):
     # codeE=models.AutoField(primary_key=True)
@@ -36,9 +41,29 @@ class employe(models.Model):
     adresseE=models.CharField(max_length=50)
     telephoneE=models.CharField(max_length=10)
     salaire_jour=models.FloatField(max_length=10)
-    centre=models.ForeignKey(centre,on_delete=models.CASCADE)
+    centre=models.ForeignKey(centre,on_delete=models.SET_NULL,null=True)
+    points=models.IntegerField(default=0)
     def __str__(self):
         return f"{self.nomE} {self.prenomE}"
+
+# class pointage(models.Model):
+#     employe=models.OneToOneField(employe,on_delete=models.CASCADE,unique=True)
+#     points=models.IntegerField(default=0)
+#     def __str__(self):
+#         return f"{self.employe} - {self.points}"
+    
+class absence(models.Model):
+    employe=models.ForeignKey(employe,on_delete=models.CASCADE)
+    dateAbsence=models.DateField()
+    def __str__(self):
+        return f"{self.employe} - {self.dateAbsence}"
+
+class avanceSalaire(models.Model):
+    employe=models.ForeignKey(employe,on_delete=models.CASCADE)
+    montant=models.FloatField()
+    dateDemande=models.DateField()
+    def __str__(self):
+        return f"{self.employe} - {self.dateDemande}"
 
 class produit(models.Model):
     # codeP=models.AutoField(primary_key=True)
@@ -56,22 +81,21 @@ class matierePremiere(models.Model):
     def __str__(self):
         return self.nomMP
 
-# class achat(models.Model):
-#     # codeAchat=models.AutoField(primary_key=True)
-#     dateAchat=models.DateTimeField(default=datetime.now)
-#     produitsAchete=models.ManyToManyField(produit,related_name="achat")
-#     fournisseur=models.ForeignKey(fournisseur,ondelete=models.CASCADE)
-    
 # class vente(models.Model):
 #     # codeVente=models.AutoField(primary_key=True)
 #     dateVente=models.DateTimeField(default=datetime.now)
-#     produitsVendu=models.ManyToManyField(produit,related_name="vente")
-#     client=models.ForeignKey(client,ondelete=models.CASCADE)
-
-
+#     client=models.ForeignKey(client,on_delete=models.CASCADE)
+#     produitsVendus=models.ManyToManyField(produit,related_name="vente")
+    
+# class achat(models.Model):
+#     # codeAchat=models.AutoField(primary_key=True)
+#     dateAchat=models.DateTimeField(default=datetime.now)
+#     produitsAchetes=models.ManyToManyField(produit,related_name="achat")
+#     fournisseur=models.ForeignKey(fournisseur,on_delete=models.CASCADE)
+    
 # class transfert(models.Model):
 #     # codeTransfert=models.AutoField(primary_key=True)
 #     dateTransfert=models.DateTimeField(default=datetime.now)
-#     produitsTransfere=models.ManyToManyField(produit,related_name="transfert")
-#     centre=models.ForeignKey(centre,ondelete=models.CASCADE)
+#     produitsTransferes=models.ManyToManyField(produit,related_name="transfert")
+#     centre=models.ForeignKey(centre,on_delete=models.CASCADE)
 

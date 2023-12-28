@@ -1,0 +1,40 @@
+<h1>Les Absences de l'employé {{employe.nomE}} {{employe.prenomE}}</h1>
+
+{% if absences %}
+<table border="1px">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Date</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  {% for a in absences %}
+  <tbody>
+    <tr>
+      <td>{{a.id}}</td>
+      <td>{{a.dateAbsence}}</td>
+      <td>
+        <a href="{% url 'editAbsence' a.id %}">Modifier</a>
+      </td>
+      <td>
+        <a href="{% url 'deleteAbsence' a.id %}">Supprimer</a>
+      </td>
+    </tr>
+  </tbody>
+  {% endfor %}
+</table>
+{% else %}
+<p>Cet Employé ne c'est jamais absenté</p>
+{% endif %}
+
+<a href="{% url 'addAbsence' employe.id %}">
+  <button>Enregistrer une Absence</button>
+</a>
+<br />
+<br />
+
+<a href="{% url 'module_employe' centre_id=employe.centre.numeroC %}">
+  <button>retourner</button>
+</a>

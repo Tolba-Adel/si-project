@@ -1,5 +1,8 @@
 from django.db import models
 from datetime import datetime
+import calculation
+
+
 
 class client(models.Model):
     # codeCl=models.AutoField(primary_key=True)
@@ -21,12 +24,12 @@ class fournisseur(models.Model):
     def __str__(self):
         return f"{self.nomF} {self.prenomF}"
 
-class centre(models.Model):
-    centre_possibles=[
+centre_possibles=[
         (1, '1'),
         (2, '2'),
         (3, '3')
     ]
+class centre(models.Model):
     # codeC=models.AutoField(primary_key=True)
     nomC=models.CharField(max_length=50)
     numeroC=models.IntegerField(choices=centre_possibles,unique=True)
@@ -76,26 +79,56 @@ class produit(models.Model):
 class matierePremiere(models.Model):
     # codeM=models.AutoField(primary_key=True)
     nomMP=models.CharField(max_length=50)
-    prix_achatMP=models.FloatField(max_length=10)
-    prix_venteMP=models.FloatField(max_length=10)
+    TypeMP=models.CharField(max_length=50)
+    Quantite=models.IntegerField()
+    Fournisseur=models.ForeignKey(fournisseur,on_delete=models.CASCADE,default=1)
     def __str__(self):
         return self.nomMP
 
-# class vente(models.Model):
-#     # codeVente=models.AutoField(primary_key=True)
-#     dateVente=models.DateTimeField(default=datetime.now)
-#     client=models.ForeignKey(client,on_delete=models.CASCADE)
-#     produitsVendus=models.ManyToManyField(produit,related_name="vente")
-    
-# class achat(models.Model):
-#     # codeAchat=models.AutoField(primary_key=True)
-#     dateAchat=models.DateTimeField(default=datetime.now)
-#     produitsAchetes=models.ManyToManyField(produit,related_name="achat")
-#     fournisseur=models.ForeignKey(fournisseur,on_delete=models.CASCADE)
-    
-# class transfert(models.Model):
-#     # codeTransfert=models.AutoField(primary_key=True)
-#     dateTransfert=models.DateTimeField(default=datetime.now)
-#     produitsTransferes=models.ManyToManyField(produit,related_name="transfert")
-#     centre=models.ForeignKey(centre,on_delete=models.CASCADE)
+class achat(models.Model):
+    # NumAchat=models.AutoField(primary_key=True,default=1)
+    dateAchat=models.DateTimeField(default=datetime.now)
+    fournisseur=models.ForeignKey(fournisseur,null=True,on_delete=models.CASCADE)
+    matieresAchetes=models.ForeignKey(matierePremiere,null=True,on_delete=models.CASCADE)
+    QteAchat=models.IntegerField(default=0)
+    prixAchat=models.FloatField(default=0)
+    montantTotal=models.FloatField(default=0)
+    montantverse=models.FloatField(default=0)
+    montantRestant=models.FloatField(default=0)
+    def __str__(self):
+        return f"{self.matieresAchetes}"
 
+class ReglementFournisseur(models.Model):
+    dateReg=models.DateTimeField(default=datetime.now)
+    Fournisseur=models.ForeignKey(fournisseur,on_delete=models.CASCADE,default=1)
+    solde=models.FloatField(default=0)
+    montantReg=models.FloatField(default=0)
+    def __str__(self):
+        return f"Reglement fournisseur: {self.Fournisseur}"
+
+
+class TransfertMatierePremiere(models.Model):
+    # codeTransfert=models.AutoField(primary_key=True)
+    dateTransfert=models.DateTimeField(default=datetime.now)
+    centre=models.ForeignKey(centre, on_delete=models.CASCADE)
+    MatieresTransferes=models.ForeignKey(achat, on_delete=models.CASCADE)
+    QteTrf=models.IntegerField()
+    PrixUTA=models.FloatField(default=0)
+    CoutTrf=models.IntegerField(default=0) 
+    def __str__(self):
+        return f"Transfert #{self.id}"
+
+
+
+class VenteMatierePremiere(models.Model):
+    # codeVenteMP=models.AutoField(primary_key=True)
+    dateVente=models.DateTimeField(default=datetime.now)
+    client=models.ForeignKey(client,null=True,on_delete=models.CASCADE)
+    MPVendus=models.ForeignKey(matierePremiere,null=True,on_delete=models.CASCADE)
+    QteVds=models.IntegerField(default=0)
+    prixUT=models.FloatField(default=0)
+    montantVente=models.FloatField(default=0)
+    montantEncaisse=models.FloatField(default=0)
+    ResteAPayer=models.FloatField(default=0)
+    def __str__(self):
+        return f"{self. MPVendus}"

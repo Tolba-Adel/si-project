@@ -1,0 +1,16 @@
+<form method="POST">
+    {% csrf_token %}  
+
+    {{form.as_p}}
+    <input type="submit" value="Confirmer Transfert" />
+  </form>
+  {{ form.media }}
+  <p>{{message}}</p>
+  
+  </script>
+  <a href="{% url 'liste_matierePremieres' %}">
+    <button>Liste Matière Premières</button>
+  </a>
+ <a href="{% url 'liste_TransfertmatierePremieres' %}">
+    <button>Journal Transfert Matière Premières</button>
+  </a> 

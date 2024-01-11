@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    {{ form.media.css }}
+    <style>
+       select {width: 10%}
+    </style>
+  </head>
+  <body>
+    <form method="POST">
+      {% csrf_token %}  
+      {{form.as_p}}
+      {% comment %} <a href="{% url 'addF' %}" class="btn btn-secondary" style="position: absolute; top: 43px; left:280px"><button>Ajouter Fournisseur</button></a>  {% endcomment %}
+      <input type="submit" value="Confirmer Achat" />
+    </form>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      {{ form.media.js }}
+    <p>{{message}}</p>
+    
+    </script>
+    <a href="{% url 'liste_matierePremieres' %}">
+      <button>Liste Matière Premières</button>
+    </a>
+    <a href="{% url 'liste_AchatmatierePremieres' %}">
+      <button>Journal achat Matière Premières</button>
+    </a> 
+    
+    <!-- change it to be able to buy and not just add -->
+    <script src="" async defer></script>
+  </body>
+</html>
+

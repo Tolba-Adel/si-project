@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from .models import fournisseur,client,employe,centre,matierePremiere,absence,avanceSalaire
-from .forms import clientForm,fournisseurForm,employeForm,centreForm,matierePremiereForm
+from .models import fournisseur,client,employe,centre,matierePremiere,absence,avanceSalaire,achat,TransfertMatierePremiere,ReglementFournisseur,VenteMatierePremiere
+from .forms import clientForm,fournisseurForm,employeForm,centreForm,matierePremiereForm,AchatmatierePremiereForm,TransfertmatierePremiereForm,ReglementMPForm,VentematierePremiereForm
 
 #Home Page
 def index(request):
@@ -191,6 +191,7 @@ def supprimer_centre(request,pk):
 
 
 #Gestion Matiere Premiere
+
 def afficher_matierePremieres(request):
     if request.method == "GET":
         query = request.GET.get('recherche')
@@ -199,19 +200,6 @@ def afficher_matierePremieres(request):
         else:
             matierePremieres=matierePremiere.objects.all()
         return render(request,"magasin/matierePremiere/matierePremiere.html",{'matierePremieres':matierePremieres})
-
-# def ajouter_matierePremiere(request):
-#     if request.method == "POST":
-#         form=matierePremiereForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             form=matierePremiereForm()
-#             msg="Matière Première ajoutée avec succès"
-#             return render(request,"magasin/matierePremiere/addMatierePremiere.html",{'form':form,"message":msg})
-#     else:
-#         form=matierePremiereForm()
-#         msg=""
-#         return render(request,"magasin/matierePremiere/addMatierePremiere.html",{"form":form,"message":msg})
 
 def modifier_matierePremiere(request,pk):
     mp=matierePremiere.objects.get(id=pk)
@@ -232,10 +220,161 @@ def supprimer_matierePremiere(request,pk):
     return render(request,'magasin/matierePremiere/confirmDelete.html',{'matierePremiere':mp})
 
 
+#Achat matiere premiere
+
+def Achat_matierePremiere(request):
+    if request.method == "POST":
+        form=AchatmatierePremiereForm(request.POST)
+        print(form['matieresAchetes'].value()[0])
+        if form.is_valid():
+            selectedMP = matierePremiere.objects.get(pk=form['matieresAchetes'].value()[0])
+            selectedMP.Quantite = selectedMP.Quantite + int(form['QteAchat'].value())
+            selectedMP.save()
+            solFour = fournisseur.objects.get(pk=form['fournisseur'].value()[0])
+            solFour.solde=solFour.solde + int(form['montantRestant'].value())
+            solFour.save()
+            form.save()
+            form=AchatmatierePremiereForm()
+            msg="Achat Matière Première avec succès"
+            return render(request,"magasin/matierePremiere/AchatMatierePremiere.html",{'form':form,"message":msg})
+        return render(request,"magasin/matierePremiere/AchatMatierePremiere.html",{'form':form,"message":""})
+    else:
+        form=AchatmatierePremiereForm()
+        msg=""
+        return render(request,"magasin/matierePremiere/AchatMatierePremiere.html",{"form":form,"message":msg})
+
+def ReglementAchat_matierePremiere(request):
+    if request.method == "POST":
+        form=ReglementMPForm(request.POST)
+        if form.is_valid():
+            # selectedF = form.save(commit = False)
+            # selectedF.solde = fournisseur.objects.get(pk=form['solde'].value()[0]).solde
+            # selectedF.save()
+            editSoldeF = achat.objects.get(pk=form['Fournisseur'].value()[0])
+            editSoldeF.montantRestant = editSoldeF.montantRestant - float(form['montantReg'].value())
+            editSoldeF.save()
+            form.save()
+            form=ReglementMPForm()
+            msg="Reglement solde fournisseur avec succès"
+            return render(request,"magasin/matierePremiere/ReglementAchat.html",{'form':form,"message":msg})
+        return render(request,"magasin/matierePremiere/ReglementAchat.html",{'form':form,"message":""})
+    else:
+        form=ReglementMPForm()
+        msg=""
+        return render(request,"magasin/matierePremiere/ReglementAchat.html",{"form":form,"message":msg})
+
+# Journal Achat Matiere Premiere
+
+def afficher_JournalAchatMP(request):
+      if request.method == "GET":
+          query = request.GET.get('recherche')
+          sort_by = request.GET.get('sort_by', 'dateAchat')
+          if query:
+              achatmatierePremieres=achat.objects.filter(matieresAchetes__nomMP__icontains=query).order_by(sort_by)
+          else:
+              achatmatierePremieres=achat.objects.all().order_by(sort_by)
+
+          return render(request,'magasin/matierePremiere/JournalAchatMP.html',{"achatmatierePremieres":achatmatierePremieres})
+  
+def modifier_AchatmatierePremiere(request,pk):
+    mp=achat.objects.get(id=pk)
+    if request.method == "POST":
+        form=AchatmatierePremiereForm(request.POST,instance=mp)
+        if form.is_valid():
+            form.save()
+            return redirect("liste_AchatmatierePremieres")
+    else:
+        form=AchatmatierePremiereForm(instance=mp)
+        return render(request,"magasin/matierePremiere/EditAchatMatierePremiere.html",{"form":form})
+
+def supprimer_AchatmatierePremiere(request,pk):
+    mp=get_object_or_404(achat,id=pk)
+    if request.method == 'POST':
+            form=AchatmatierePremiereForm(request.POST)
+            selectedMP = matierePremiere.objects.get(pk=mp.matieresAchetes.all()[0].id)
+            selectedMP.Quantite = selectedMP.Quantite - int(mp.QteAchat)
+            selectedMP.save()
+            mp.delete() 
+            return redirect('liste_AchatmatierePremieres')
+    return render(request,'magasin/matierePremiere/DelAchatMatierePremiere.html',{'matierePremiere':mp})
+
+# Transfert Matiere Premiere  
+
+def Transfert_matierePremiere(request):
+    
+    if request.method == "POST":
+        form=TransfertmatierePremiereForm(request.POST)
+        print(form['MatieresTransferes'].value()[0])
+        if form.is_valid():
+            editForm = form.save(commit = False)
+            editForm.PrixUTA = achat.objects.get(pk=form['MatieresTransferes'].value()[0]).prixAchat
+
+            editForm.CoutTrf = achat.objects.get(pk=form['MatieresTransferes'].value()[0]).prixAchat * int(form['QteTrf'].value())
+            
+            editForm.save()
+            selectedMP = matierePremiere.objects.get(pk=form['MatieresTransferes'].value()[0])
+            selectedMP.Quantite = selectedMP.Quantite - int(form['QteTrf'].value())
+
+            selectedMP.save()
+            form=TransfertmatierePremiereForm()
+            msg="Transfert Matière Première avec succès"
+            return render(request,"magasin/matierePremiere/TransfertMatierePremiere.html",{'form':form,"message":msg})
+        return render(request,"magasin/matierePremiere/TransfertMatierePremiere.html",{'form':form,"message":""})
+    else:
+        form=TransfertmatierePremiereForm()
+        msg=""
+        return render(request,"magasin/matierePremiere/TransfertMatierePremiere.html",{"form":form,"message":msg})
+
+# Journal de Transfert Matiere Premiere 
+def afficher_JournalTransfertMP(request):
+      if request.method == "GET":
+          query = request.GET.get('recherche')
+          sort_by = request.GET.get('sort_by', 'dateTransfert')
+          if query:
+              transfertmatierePremieres=TransfertMatierePremiere.objects.filter(MatieresTransferes__nomMP__icontains=query).order_by(sort_by)
+          else:
+              transfertmatierePremieres=TransfertMatierePremiere.objects.all().order_by(sort_by)
+
+          return render(request,'magasin/matierePremiere/JournalTransfertMP.html',{"transfertmatierePremieres":transfertmatierePremieres})
+
+# Vente Matiere Premiere
+
+def Vente_MatierePremiere(request):
+    if request.method == "POST":
+        form=VentematierePremiereForm(request.POST)
+        print(form['MPVendus'].value()[0])
+        if form.is_valid():
+            selectedMP = matierePremiere.objects.get(pk=form['MPVendus'].value()[0])
+            selectedMP.Quantite = selectedMP.Quantite - int(form['QteVds'].value())
+            selectedMP.save()
+            credCL = client.objects.get(pk=form['client'].value()[0])
+            credCL.credit=credCL.credit + int(form['ResteAPayer'].value())
+            credCL.save()
+            form.save()
+            form=VentematierePremiereForm()
+            msg="Vente Matière Première avec succès"
+            return render(request,"magasin/matierePremiere/VenteMatierePremiere.html",{'form':form,"message":msg})
+        return render(request,"magasin/matierePremiere/VenteMatierePremiere.html",{'form':form,"message":""})
+    else:
+        form=VentematierePremiereForm()
+        msg=""
+        return render(request,"magasin/matierePremiere/VenteMatierePremiere.html",{"form":form,"message":msg})
+
+#Journal de Vente Matiere Premiere 
+def afficher_JournalVenteMP(request):
+      if request.method == "GET":
+          query = request.GET.get('recherche')
+          sort_by = request.GET.get('sort_by', 'dateVente')
+          if query:
+              ventematierePremieres=VenteMatierePremiere.objects.filter(MPVendus__nomMP__icontains=query).order_by(sort_by)
+          else:
+              ventematierePremieres=VenteMatierePremiere.objects.all().order_by(sort_by)
+
+          return render(request,'magasin/matierePremiere/JournalVenteMP.html',{"ventematierePremieres":ventematierePremieres})
 
 #Centre Section
 def section_centre(request,centre_id):
-    centre_id=centre_id;
+    centre_id=centre_id
     return render(request,"centre/modules.html",{'centre_id':centre_id})
  
 def module_employe(request,centre_id):

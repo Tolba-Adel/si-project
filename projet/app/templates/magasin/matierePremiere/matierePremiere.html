@@ -6,7 +6,7 @@
     <title>Matière Premières</title>
   </head>
   <body>
-    <h1>Liste des Matière Premières</h1>
+    <h1>Stock de Matière Premières</h1>
 
     <form method="GET">
       <label for="search">Entrez le nom de la matière première:</label>
@@ -21,8 +21,9 @@
         <tr>
           <th></th>
           <th>Nom</th>
-          <th>Prix Achat</th>
-          <th>Prix Vente</th>
+          <th>Type</th>
+          <th>Quantite</th>
+          <th></th>
           <th></th>
           <th></th>
         </tr>
@@ -32,8 +33,8 @@
         <tr>
           <td>{{mp.id}}</td>
           <td>{{mp.nomMP}}</td>
-          <td>{{mp.prix_achatMP}}</td>
-          <td>{{mp.prix_venteMP}}</td>
+          <td>{{mp.TypeMP}}</td>
+          <td>{{mp.Quantite}}</td>
           <td>
             <a href="{% url 'editMP' mp.id %}">Modifier</a>
           </td>
@@ -48,12 +49,17 @@
     <p>Aucune Matière Première a afficher</p>
     {% endif %}
 
-    <a href="matierePremiere/ajouter">
+    <a href="matierePremiere/AchatMatierePremiere">
       <button>Acheter une Matière Première</button>
     </a>
     <br />
     <br />
-
+    <a href="matierePremiere/TransfertMatierePremiere">
+      <button>Transferer une Matière Première</button>
+    </a>
+    <a href="matierePremiere/VenteMatierePremiere">
+      <button>Vendre Matière Première</button>
+    </a>
     <a href="magasin">
       <button>retourner</button>
     </a>

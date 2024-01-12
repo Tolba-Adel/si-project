@@ -1,0 +1,45 @@
+<h1>Liste des Ventes du Centre {{centre_id}}</h1>
+
+{% if ventes %}
+<table border="1px">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Date</th>
+      <th>Nom Client</th>
+      <th>Prénom Client</th>
+      <th>Produit</th>
+      <th>Quantité</th>
+      <th>Prix unitaire</th>
+      <th>Montant versé</th>
+    </tr>
+  </thead>
+  {% for v in ventes %}
+  <tbody>
+    <tr>
+      <td>{{v.id}}</td>
+      <td>{{v.dateVente}}</td>
+      <td>{{v.client.nomCl}}</td>
+      <td>{{v.client.prenomCl}}</td>
+      <td>{{v.produitVendu}}</td>
+      <td>{{v.qteVendu}}</td>
+      <td>{{v.prixVente}}</td>
+      <td>{{v.montantVerse}}</td>
+    </tr>
+  </tbody>
+  {% endfor %}
+</table>
+{% else %}
+<p>Aucune Vente dans ce Centre</p>
+{% endif %}
+
+<br />
+<a href="{% url 'addVente' centre_id=centre_id %}">
+  <button>Enregistrer une Vente</button>
+</a>
+<br />
+<br />
+
+<a href="{% url 'activites_centre' centre_id=centre_id %}">
+  <button>retourner</button>
+</a>

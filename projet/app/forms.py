@@ -1,6 +1,6 @@
 from django.db.models import fields
 from django import forms
-from .models import client,fournisseur,centre,employe
+from .models import client,fournisseur,centre,employe,venteProduit
 
 class clientForm(forms.ModelForm):
     class Meta:
@@ -45,4 +45,16 @@ class employeForm(forms.ModelForm):
             'telephoneE': 'Telephone',
             'salaire_jour': 'Salaire journalier',
             'centre': 'Centre'
+        }
+
+class venteProduitForm(forms.ModelForm):
+    class Meta:
+        model=venteProduit
+        fields="__all__"
+        labels={
+            'dateVente':'Date',
+            'produitVendu':'Produit',
+            'qteVendu':'Quantité',
+            'prixVente':'Prix Unitaire',
+            'montantVerse':'Montant Versé',
         }

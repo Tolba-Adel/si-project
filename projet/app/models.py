@@ -62,13 +62,17 @@ class avanceSalaire(models.Model):
 class produit(models.Model):
     # codeP=models.AutoField(primary_key=True)
     nomP=models.CharField(max_length=50)
-    prix_achat=models.FloatField(max_length=10)
-    prix_vente=models.FloatField(max_length=10)
+    qte=models.IntegerField()
     def __str__(self):
         return self.nomP
 
-# class vente(models.Model):
-#     # codeVente=models.AutoField(primary_key=True)
-#     dateVente=models.DateTimeField(default=datetime.now)
-#     client=models.ForeignKey(client,on_delete=models.CASCADE)
-#     produitsVendus=models.ManyToManyField(produit,related_name="vente")
+class venteProduit(models.Model):
+    # codeVentePr=models.AutoField(primary_key=True)
+    dateVente=models.DateTimeField(default=datetime.now)
+    client=models.ForeignKey(client,on_delete=models.CASCADE)
+    produitVendu=models.ForeignKey(produit,on_delete=models.CASCADE)
+    qteVendu=models.IntegerField()
+    prixVente=models.FloatField(max_length=10)
+    montantVerse=models.FloatField(default=0)
+    def __str__(self):
+        return f"{self.id}-{self.client.nomCl} {self.produitVendu}"

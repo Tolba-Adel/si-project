@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from .models import fournisseur,client,employe,centre,absence,avanceSalaire
-from .forms import clientForm,fournisseurForm,employeForm,centreForm
+from .models import fournisseur,client,employe,centre,absence,avanceSalaire,produit,venteProduit
+from .forms import clientForm,fournisseurForm,employeForm,centreForm,venteProduitForm
 
 #Home Page
 def index(request):
@@ -194,7 +194,55 @@ def supprimer_centre(request,pk):
 def section_centre(request,centre_id):
     centre_id=centre_id;
     return render(request,"centre/modules.html",{'centre_id':centre_id})
- 
+
+#Activités du Centre
+def activites_centre(request,centre_id):
+    return render(request,"centre/activitesCentre.html",{'centre_id':centre_id})
+#Ventes des Produits
+def journal_vente(request,centre_id):
+    ventes = venteProduit.objects.all()
+    return render(request,"centre/journal_vente.html",{'ventes':ventes,'centre_id':centre_id})
+
+def ajouter_vente(request,centre_id):
+    if request.method == "POST":
+        form=venteProduitForm(request.POST)
+        msg_montant=""
+        if form.is_valid():
+            id_prd=request.POST.get("produitVendu")
+            prd=produit.objects.get(id=id_prd)
+            qte=int(request.POST.get("qteVendu"))
+            if(prd.qte>=qte):
+                prix=float(request.POST.get("prixVente"))
+                montant_total=qte*prix
+                msg_montant="Montant Total= "+str(montant_total)
+
+                prd.qte-=qte
+                prd.save()
+
+                montant_verse=float(request.POST.get("montantVerse"))
+                if(montant_verse==0):
+                    form.instance.montantVerse=montant_total
+                else:
+                    id_cl=request.POST.get("client")
+                    cl=client.objects.get(id=id_cl)
+                    montant_restant=montant_total-montant_verse
+                    cl.credit=montant_restant
+                    cl.save()
+                
+                form.save()
+                form=venteProduitForm()
+                msg="Vente enregistrée avec succès"
+            else:
+                msg="Stock inssufisant, Quantité en stock= "+str(prd.qte)
+
+            return render(request,"centre/addVente.html",{'form':form,"message":msg,'centre_id':centre_id,'message_montant':msg_montant})
+    else:
+        form=venteProduitForm()
+        msg=""
+        return render(request,"centre/addVente.html",{"form":form,"message":msg,'centre_id':centre_id})
+
+
+#Module Employé
 def module_employe(request,centre_id):
     c=centre.objects.get(numeroC=centre_id)
     employes=employe.objects.filter(centre=c)

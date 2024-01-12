@@ -8,8 +8,8 @@
   <body>
     <h1>Modules du Centre {{centre_id}}</h1>
 
-    <a href="">
-      <button>Module des Ventes</button>
+    <a href="{% url 'activites_centre' centre_id=centre_id %}">
+      <button>Activités du Centre</button>
     </a>
     <br />
 

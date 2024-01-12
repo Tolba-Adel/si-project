@@ -34,6 +34,15 @@ urlpatterns = [
 
     #Centre Section
     path('sectionCentre/<int:centre_id>',views.section_centre,name="section_centre"),
+    #Activités du Centre
+    path('activitesCentre/<int:centre_id>',views.activites_centre,name="activites_centre"),
+    #Ventes des Produits
+    path('journalVente/<int:centre_id>',views.journal_vente,name="journal_vente"),
+    path('journalVente/ajouter/<int:centre_id>',views.ajouter_vente,name="addVente"),
+    #Paiement Crédit Client
+    path('paiementCredit',views.ajouter_vente,name="paiement_credit"),
+
+    #Module Employé
     path('moduleEmploye/<int:centre_id>',views.module_employe,name="module_employe"),
     path('modifierPoints/<int:pk>',views.modifier_points,name="editPts"),
 

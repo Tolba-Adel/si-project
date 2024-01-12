@@ -45,12 +45,6 @@ class employe(models.Model):
     points=models.IntegerField(default=0)
     def __str__(self):
         return f"{self.nomE} {self.prenomE}"
-
-# class pointage(models.Model):
-#     employe=models.OneToOneField(employe,on_delete=models.CASCADE,unique=True)
-#     points=models.IntegerField(default=0)
-#     def __str__(self):
-#         return f"{self.employe} - {self.points}"
     
 class absence(models.Model):
     employe=models.ForeignKey(employe,on_delete=models.CASCADE)
@@ -73,29 +67,8 @@ class produit(models.Model):
     def __str__(self):
         return self.nomP
 
-class matierePremiere(models.Model):
-    # codeM=models.AutoField(primary_key=True)
-    nomMP=models.CharField(max_length=50)
-    prix_achatMP=models.FloatField(max_length=10)
-    prix_venteMP=models.FloatField(max_length=10)
-    def __str__(self):
-        return self.nomMP
-
 # class vente(models.Model):
 #     # codeVente=models.AutoField(primary_key=True)
 #     dateVente=models.DateTimeField(default=datetime.now)
 #     client=models.ForeignKey(client,on_delete=models.CASCADE)
 #     produitsVendus=models.ManyToManyField(produit,related_name="vente")
-    
-# class achat(models.Model):
-#     # codeAchat=models.AutoField(primary_key=True)
-#     dateAchat=models.DateTimeField(default=datetime.now)
-#     produitsAchetes=models.ManyToManyField(produit,related_name="achat")
-#     fournisseur=models.ForeignKey(fournisseur,on_delete=models.CASCADE)
-    
-# class transfert(models.Model):
-#     # codeTransfert=models.AutoField(primary_key=True)
-#     dateTransfert=models.DateTimeField(default=datetime.now)
-#     produitsTransferes=models.ManyToManyField(produit,related_name="transfert")
-#     centre=models.ForeignKey(centre,on_delete=models.CASCADE)
-

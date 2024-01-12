@@ -31,13 +31,6 @@ urlpatterns = [
     path('centre/ajouter',views.ajouter_centre, name="addC"),
     path('centre/edit/<int:pk>',views.modifier_centre, name="editC"),
     path('centre/delete/<int:pk>',views.supprimer_centre, name="deleteC"),
-    #Matiere Premiere
-    path('matierePremiere',views.afficher_matierePremieres,name='liste_matierePremieres'),
-    # path('matierePremiere/ajouter',views.ajouter_matierePremiere, name="addMP"),
-    path('matierePremiere/edit/<int:pk>',views.modifier_matierePremiere, name="editMP"),
-    path('matierePremiere/delete/<int:pk>',views.supprimer_matierePremiere, name="deleteMP"),
-
-
 
     #Centre Section
     path('sectionCentre/<int:centre_id>',views.section_centre,name="section_centre"),

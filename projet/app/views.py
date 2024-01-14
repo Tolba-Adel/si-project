@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from .models import fournisseur,client,employe,centre,absence,avanceSalaire,produit,venteProduit
-from .forms import clientForm,fournisseurForm,employeForm,centreForm,venteProduitForm
+from .forms import clientForm,fournisseurForm,employeForm,centreForm,venteProduitForm,produitForm
 
 #Home Page
 def index(request):
@@ -56,7 +56,6 @@ def supprimer_client(request,pk):
     # Si la requête est une GET, afficher la page de confirmation de suppression
     return render(request, 'magasin/client/confirmDelete.html', {'client': cl})
 
-
 #Gestion Fournisseur
 def afficher_fournisseurs(request):
     if request.method == "GET":
@@ -98,7 +97,6 @@ def supprimer_fournisseur(request,pk):
         return redirect('liste_fournisseurs')
     return render(request,'magasin/fournisseur/confirmDelete.html',{'fournisseur': f})
 
-
 #Gestion Employe
 def afficher_employes(request):
     if request.method == "GET":
@@ -139,7 +137,6 @@ def supprimer_employe(request,pk):
         e.delete() 
         return redirect('liste_employes')
     return render(request,'magasin/employe/confirmDelete.html',{'employe':e})
-
 
 #Gestion Centre
 def afficher_centres(request):
@@ -189,6 +186,46 @@ def supprimer_centre(request,pk):
         return redirect('liste_centres')
     return render(request,'magasin/centre/confirmDelete.html',{'centre':c})
 
+#Gestion Produit
+def afficher_produits(request):
+    if request.method == "GET":
+        query = request.GET.get('recherche')
+        if query:
+            produits=produit.objects.filter(nomP__icontains=query)
+        else:
+            produits = produit.objects.all()
+        return render(request,"magasin/produit/produit.html",{'produits':produits})
+
+def ajouter_produit(request):
+    if request.method == "POST":
+        form=produitForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form=produitForm()
+            msg="Produit ajoutée avec succès"
+            return render(request,"magasin/produit/addProduit.html",{'form':form,"message":msg})
+    else:
+        form=produitForm()
+        msg=""
+    return render(request,"magasin/produit/addProduit.html",{"form":form,"message":msg})
+
+def modifier_produit(request,pk):
+    prd=produit.objects.get(id=pk)
+    if request.method == "POST":
+        form=produitForm(request.POST,instance=prd)
+        if form.is_valid():
+            form.save()
+            return redirect("liste_produits")
+    else:
+        form=produitForm(instance=prd)
+        return render(request,"magasin/produit/editProduit.html",{"form":form})
+
+def supprimer_produit(request,pk):
+    prd=get_object_or_404(produit,id=pk)
+    if request.method == 'POST':
+        prd.delete() 
+        return redirect('liste_produits')
+    return render(request,'magasin/produit/confirmDelete.html',{'produit':prd})
 
 #Centre Section
 def section_centre(request,centre_id):
@@ -240,7 +277,19 @@ def ajouter_vente(request,centre_id):
         form=venteProduitForm()
         msg=""
         return render(request,"centre/addVente.html",{"form":form,"message":msg,'centre_id':centre_id})
-
+#Paiement Crédit Client
+# def paiement_credit(request):
+#     if request.method == "POST":
+#         form=paiementCreditForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             form=paiementCreditForm()
+#             msg="Paiement effectué avec succès"
+#             return render(request,"centre/paiementCredit.html",{'form':form,"message":msg})
+#     else:
+#         form=paiementCreditForm()
+#         msg=""
+#         return render(request,"centre/paiementCredit.html",{"form":form,"message":msg})
 
 #Module Employé
 def module_employe(request,centre_id):

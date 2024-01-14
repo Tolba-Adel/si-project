@@ -31,6 +31,11 @@ urlpatterns = [
     path('centre/ajouter',views.ajouter_centre, name="addC"),
     path('centre/edit/<int:pk>',views.modifier_centre, name="editC"),
     path('centre/delete/<int:pk>',views.supprimer_centre, name="deleteC"),
+    #Produit
+    path('produit',views.afficher_produits,name='liste_produits'),
+    path('produit/ajouter',views.ajouter_produit, name="addPrd"),
+    path('produit/edit/<int:pk>',views.modifier_produit, name="editPrd"),
+    path('produit/delete/<int:pk>',views.supprimer_produit, name="deletePrd"),
 
     #Centre Section
     path('sectionCentre/<int:centre_id>',views.section_centre,name="section_centre"),
@@ -40,7 +45,7 @@ urlpatterns = [
     path('journalVente/<int:centre_id>',views.journal_vente,name="journal_vente"),
     path('journalVente/ajouter/<int:centre_id>',views.ajouter_vente,name="addVente"),
     #Paiement Crédit Client
-    path('paiementCredit',views.ajouter_vente,name="paiement_credit"),
+    # path('paiementCredit',views.paiement_credit,name="paiement_credit"),
 
     #Module Employé
     path('moduleEmploye/<int:centre_id>',views.module_employe,name="module_employe"),

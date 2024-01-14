@@ -1,6 +1,6 @@
 from django.db.models import fields
 from django import forms
-from .models import client,fournisseur,centre,employe,venteProduit
+from .models import client,fournisseur,centre,employe,produit,venteProduit
 
 class clientForm(forms.ModelForm):
     class Meta:
@@ -47,6 +47,15 @@ class employeForm(forms.ModelForm):
             'centre': 'Centre'
         }
 
+class produitForm(forms.ModelForm):
+    class Meta:
+        model=produit
+        fields="__all__"
+        lables={
+            'nomP':'Nom produit',
+            'qte':'Quantité',
+        }
+
 class venteProduitForm(forms.ModelForm):
     class Meta:
         model=venteProduit
@@ -56,5 +65,14 @@ class venteProduitForm(forms.ModelForm):
             'produitVendu':'Produit',
             'qteVendu':'Quantité',
             'prixVente':'Prix Unitaire',
-            'montantVerse':'Montant Versé',
+            'montantVerse':'Montant Versé'
         }
+
+# class paiementCreditForm(forms.ModelForm):
+#     class Meta:
+#         model:paiementCredit
+#         fields="__all__"
+#         labels={
+#             'datePaiement':'Date',
+#             'montantPaiement':'Montant du Paiement'
+#         }

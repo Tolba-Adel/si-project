@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from .models import fournisseur,client,employe,centre,absence,avanceSalaire,produit,venteProduit
-from .forms import clientForm,fournisseurForm,employeForm,centreForm,venteProduitForm,produitForm
+from .forms import clientForm,fournisseurForm,employeForm,centreForm,venteProduitForm,produitForm,paiementCreditForm
 
 #Home Page
 def index(request):
@@ -237,21 +237,30 @@ def activites_centre(request,centre_id):
     return render(request,"centre/activitesCentre.html",{'centre_id':centre_id})
 #Ventes des Produits
 def journal_vente(request,centre_id):
-    ventes = venteProduit.objects.all()
-    return render(request,"centre/journal_vente.html",{'ventes':ventes,'centre_id':centre_id})
+    c=centre.objects.get(numeroC=centre_id)
+    ventes = venteProduit.objects.filter(centre=c)
+
+    sommeVentes=0
+    for v in ventes:
+        v.montantTotal = v.qteVendu * v.prixVente
+        sommeVentes+=v.montantTotal
+    return render(request,"centre/journal_vente.html",{'ventes':ventes,'centre_id':centre_id,'somme_ventes':sommeVentes})
 
 def ajouter_vente(request,centre_id):
     if request.method == "POST":
         form=venteProduitForm(request.POST)
         msg_montant=""
         if form.is_valid():
+            c=centre.objects.get(numeroC=centre_id)
+            form.instance.centre=c
+
             id_prd=request.POST.get("produitVendu")
             prd=produit.objects.get(id=id_prd)
             qte=int(request.POST.get("qteVendu"))
             if(prd.qte>=qte):
                 prix=float(request.POST.get("prixVente"))
                 montant_total=qte*prix
-                msg_montant="Montant Total= "+str(montant_total)
+                msg_montant="Montant Total ="+str(montant_total)
 
                 prd.qte-=qte
                 prd.save()
@@ -277,19 +286,34 @@ def ajouter_vente(request,centre_id):
         form=venteProduitForm()
         msg=""
         return render(request,"centre/addVente.html",{"form":form,"message":msg,'centre_id':centre_id})
+    
 #Paiement Crédit Client
-# def paiement_credit(request):
-#     if request.method == "POST":
-#         form=paiementCreditForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             form=paiementCreditForm()
-#             msg="Paiement effectué avec succès"
-#             return render(request,"centre/paiementCredit.html",{'form':form,"message":msg})
-#     else:
-#         form=paiementCreditForm()
-#         msg=""
-#         return render(request,"centre/paiementCredit.html",{"form":form,"message":msg})
+def paiement_credit(request, centre_id):
+    cl = None
+    form = paiementCreditForm()
+    msg = ""
+
+    if request.method == "POST":
+        query = request.POST.get('search')
+        if query:
+            cl = client.objects.get(nomCl__icontains=query)
+        
+        form = paiementCreditForm(request.POST)
+        if form.is_valid():
+            if cl:
+                montant_paiement=request.POST.get("montantPaiement")
+                if montant_paiement:
+                    cl.credit-=float(montant_paiement)
+                    cl.save()
+                    form.instance.client = cl
+                    form.save()
+                    msg = "Paiement effectué avec succès"
+                    form = paiementCreditForm()
+            else:
+                msg="Client non trouvé"
+
+    return render(request, "centre/paiementCredit.html", {'form': form, "message": msg, 'centre_id': centre_id, 'cl': cl})
+
 
 #Module Employé
 def module_employe(request,centre_id):
@@ -379,14 +403,3 @@ def supprimer_avanceSalaire(request,pk):
         avanceS.delete()
         return redirect("avanceSalaire",pk=avanceS.employe.id)
     return render(request,"centre/delteAvanceSalaire.html",{'avanceSalaire':avanceS})
-
-
-
-
-
-# def achatMatieres(request):
-#     return render(request,"magasin/AchatMatieres.html")
-
-# def getFournisseurs(request):
-#     fournisseurs=fournisseur.objects.all()
-#     return render(request,"AchatMatieres.html",{'fournisseurs':fournisseurs})

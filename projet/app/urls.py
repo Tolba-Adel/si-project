@@ -45,7 +45,7 @@ urlpatterns = [
     path('journalVente/<int:centre_id>',views.journal_vente,name="journal_vente"),
     path('journalVente/ajouter/<int:centre_id>',views.ajouter_vente,name="addVente"),
     #Paiement Crédit Client
-    # path('paiementCredit',views.paiement_credit,name="paiement_credit"),
+    path('paiementCredit/<int:centre_id>',views.paiement_credit,name="paiement_credit"),
 
     #Module Employé
     path('moduleEmploye/<int:centre_id>',views.module_employe,name="module_employe"),

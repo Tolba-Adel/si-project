@@ -1,6 +1,6 @@
 from django.db.models import fields
 from django import forms
-from .models import client,fournisseur,centre,employe,produit,venteProduit
+from .models import client,fournisseur,centre,employe,produit,venteProduit,paiementCredit
 
 class clientForm(forms.ModelForm):
     class Meta:
@@ -36,7 +36,6 @@ class centreForm(forms.ModelForm):
 class employeForm(forms.ModelForm):
     class Meta:
         model = employe
-        # fields="__all__"
         exclude=['points']
         labels = {
             'nomE': 'Nom',
@@ -59,7 +58,7 @@ class produitForm(forms.ModelForm):
 class venteProduitForm(forms.ModelForm):
     class Meta:
         model=venteProduit
-        fields="__all__"
+        exclude=['centre']
         labels={
             'dateVente':'Date',
             'produitVendu':'Produit',
@@ -68,11 +67,11 @@ class venteProduitForm(forms.ModelForm):
             'montantVerse':'Montant Versé'
         }
 
-# class paiementCreditForm(forms.ModelForm):
-#     class Meta:
-#         model:paiementCredit
-#         fields="__all__"
-#         labels={
-#             'datePaiement':'Date',
-#             'montantPaiement':'Montant du Paiement'
-#         }
+class paiementCreditForm(forms.ModelForm):
+    class Meta:
+        model=paiementCredit
+        exclude=['client']
+        labels={
+            'datePaiement':'Date',
+            'montantPaiement':'Montant du Paiement'
+        }

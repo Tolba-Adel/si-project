@@ -11,6 +11,7 @@
       <th>Produit</th>
       <th>Quantité</th>
       <th>Prix unitaire</th>
+      <th>Montant Total</th>
       <th>Montant versé</th>
     </tr>
   </thead>
@@ -24,11 +25,13 @@
       <td>{{v.produitVendu}}</td>
       <td>{{v.qteVendu}}</td>
       <td>{{v.prixVente}}</td>
+      <td>{{v.montantTotal}}</td>
       <td>{{v.montantVerse}}</td>
     </tr>
   </tbody>
   {% endfor %}
 </table>
+<p>Montant Totale des Ventes ={{somme_ventes}}</p>
 {% else %}
 <p>Aucune Vente dans ce Centre</p>
 {% endif %}

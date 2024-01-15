@@ -70,9 +70,17 @@ class venteProduit(models.Model):
     # codeVentePr=models.AutoField(primary_key=True)
     dateVente=models.DateTimeField(default=datetime.now)
     client=models.ForeignKey(client,on_delete=models.CASCADE)
+    centre=models.ForeignKey(centre,on_delete=models.CASCADE)
     produitVendu=models.ForeignKey(produit,on_delete=models.CASCADE)
     qteVendu=models.IntegerField()
     prixVente=models.FloatField(max_length=10)
     montantVerse=models.FloatField(default=0)
     def __str__(self):
         return f"{self.id}-{self.client.nomCl} {self.produitVendu}"
+    
+class paiementCredit(models.Model):
+    datePaiement=models.DateTimeField(default=datetime.now)
+    client=models.ForeignKey(client,on_delete=models.CASCADE)
+    montantPaiement=models.FloatField(null=True,blank=True)
+    def __str__(self):
+        return f"{self.client.nomCl}-{self.montantPaiement}"

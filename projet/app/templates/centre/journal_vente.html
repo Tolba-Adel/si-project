@@ -1,5 +1,29 @@
 <h1>Liste des Ventes du Centre {{centre_id}}</h1>
 
+<form method="GET">
+  <label for="search">Entrez le nom du Produit:</label>
+  <input type="text" name="recherche" id="search" />
+  <button type="submit">rechercher</button>
+</form>
+<br />
+
+<form method="GET">
+  <label for="search2">Entrez le nom du Client:</label>
+  <input type="text" name="clientName" id="search2" />
+  <button type="submit">rechercher</button>
+</form>
+<br />
+
+<form method="GET">
+  <label for="search3">Entrez Date Min:</label>
+  <input type="date" name="dateMin" id="search3" />
+  <label for="search4">Entrez Date Max:</label>
+  <input type="date" name="dateMax" id="search4" />
+  <button type="submit">rechercher</button>
+</form>
+<br />
+
+
 {% if ventes %}
 <table border="1px">
   <thead>
@@ -32,6 +56,7 @@
   {% endfor %}
 </table>
 <p>Montant Totale des Ventes ={{somme_ventes}}</p>
+<p>Bénéfice ={{benefice}}</p>
 {% else %}
 <p>Aucune Vente dans ce Centre</p>
 {% endif %}

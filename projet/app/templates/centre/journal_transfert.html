@@ -1,0 +1,53 @@
+<h1>Liste des Transferts reçu par Centre {{centre_id}}</h1>
+
+<form method="GET">
+  <label for="search">Entrez le nom de la Matière Première:</label>
+  <input type="text" name="recherche" id="search" />
+  <button type="submit">rechercher</button>
+</form>
+<br />
+
+<form method="GET">
+  <label for="search2">Entrez Date Min:</label>
+  <input type="date" name="dateMin" id="search2" />
+  <label for="search3">Entrez Date Max:</label>
+  <input type="date" name="dateMax" id="search3" />
+  <button type="submit">rechercher</button>
+</form>
+<br />
+
+{% if transferts %}
+<table border="1px">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Date</th>
+      <th>Matière première</th>
+      <th>Quantité</th>
+      <th>Prix d'Achat</th>
+      <th>Cout de Transfert</th>
+    </tr>
+  </thead>
+  {% for t in transferts %}
+  <tbody>
+    <tr>
+      <td>{{t.id}}</td>
+      <td>{{t.dateTransfert}}</td>
+      <td>{{t.MatieresTransferes}}</td>
+      <td>{{t.QteTrf}}</td>
+      <td>{{t.PrixUTA}}</td>
+      <td>{{t.CoutTrf}}</td>
+    </tr>
+  </tbody>
+  {% endfor %}
+</table>
+<p>Cout Total des Transferts ={{somme_transferts}}</p>
+{% else %}
+<p>Aucun Transfert reçu par ce Centre</p>
+{% endif %}
+
+<br />
+
+<a href="{% url 'activites_centre' centre_id=centre_id %}">
+  <button>retourner</button>
+</a>

@@ -84,3 +84,36 @@ class paiementCredit(models.Model):
     montantPaiement=models.FloatField(null=True,blank=True)
     def __str__(self):
         return f"{self.client.nomCl}-{self.montantPaiement}"
+
+class matierePremiere(models.Model):
+    # codeM=models.AutoField(primary_key=True)
+    nomMP=models.CharField(max_length=50)
+    TypeMP=models.CharField(max_length=50)
+    Quantite=models.IntegerField()
+    Fournisseur=models.ForeignKey(fournisseur,on_delete=models.CASCADE,default=1)
+    def __str__(self):
+        return self.nomMP
+
+class achat(models.Model):
+    # NumAchat=models.AutoField(primary_key=True,default=1)
+    dateAchat=models.DateTimeField(default=datetime.now)
+    fournisseur=models.ForeignKey(fournisseur,null=True,on_delete=models.CASCADE)
+    matieresAchetes=models.ForeignKey(matierePremiere,null=True,on_delete=models.CASCADE)
+    QteAchat=models.IntegerField(default=0)
+    prixAchat=models.FloatField(default=0)
+    montantTotal=models.FloatField(default=0)
+    montantverse=models.FloatField(default=0)
+    montantRestant=models.FloatField(default=0)
+    def __str__(self):
+        return f"{self.matieresAchetes}"
+
+class TransfertMatierePremiere(models.Model):
+    # codeTransfert=models.AutoField(primary_key=True)
+    dateTransfert=models.DateTimeField(default=datetime.now)
+    centre=models.ForeignKey(centre,on_delete=models.CASCADE)
+    MatieresTransferes=models.ForeignKey(achat,on_delete=models.CASCADE)
+    QteTrf=models.IntegerField()
+    PrixUTA=models.FloatField(default=0)
+    CoutTrf=models.IntegerField(default=0) 
+    def __str__(self):
+        return f"Transfert #{self.id}"

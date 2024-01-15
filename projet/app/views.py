@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from .models import fournisseur,client,employe,centre,absence,avanceSalaire,produit,venteProduit
+from .models import fournisseur,client,employe,centre,absence,avanceSalaire,produit,venteProduit,TransfertMatierePremiere
 from .forms import clientForm,fournisseurForm,employeForm,centreForm,venteProduitForm,produitForm,paiementCreditForm
 
 #Home Page
@@ -235,16 +235,62 @@ def section_centre(request,centre_id):
 #Activités du Centre
 def activites_centre(request,centre_id):
     return render(request,"centre/activitesCentre.html",{'centre_id':centre_id})
+#Journal des Transferts
+def journal_transfert(request,centre_id):
+    if request.method == "GET":
+        sort_by = request.GET.get('sort_by','dateTransfert')
+        c=centre.objects.get(numeroC=centre_id)
+        query=request.GET.get('recherche')
+        queryDateMin=request.GET.get('dateMin')
+        queryDateMax=request.GET.get('dateMax')
+
+        if query:
+            transferts=TransfertMatierePremiere.objects.filter(MatieresTransferes__matieresAchetes__nomMP__icontains=query,centre=c).order_by(sort_by)
+        elif (queryDateMin and queryDateMax):
+            transferts=TransfertMatierePremiere.objects.filter(dateTransfert__range=[queryDateMin,queryDateMax],centre=c).order_by(sort_by)
+        else:
+            transferts=TransfertMatierePremiere.objects.filter(centre=c).order_by(sort_by)
+
+        sommeTransferts=0
+        for t in transferts:
+            sommeTransferts+=t.CoutTrf
+        return render(request,"centre/journal_transfert.html",{'transferts':transferts,'centre_id':centre_id,'somme_transferts':sommeTransferts})
+
+
 #Ventes des Produits
 def journal_vente(request,centre_id):
-    c=centre.objects.get(numeroC=centre_id)
-    ventes = venteProduit.objects.filter(centre=c)
+    transferts=None
+    if request.method == "GET":
+        sort_by_vente = request.GET.get('sort_by','dateVente')
+        sort_by_transfert = request.GET.get('sort_by','dateTransfert')
+        c=centre.objects.get(numeroC=centre_id)
+        query=request.GET.get('recherche')
+        queryClient=request.GET.get('clientName')
+        queryDateMin=request.GET.get('dateMin')
+        queryDateMax=request.GET.get('dateMax')
 
-    sommeVentes=0
-    for v in ventes:
-        v.montantTotal = v.qteVendu * v.prixVente
-        sommeVentes+=v.montantTotal
-    return render(request,"centre/journal_vente.html",{'ventes':ventes,'centre_id':centre_id,'somme_ventes':sommeVentes})
+        if query:
+            ventes=venteProduit.objects.filter(produitVendu__nomP__icontains=query,centre=c).order_by(sort_by_vente)
+        elif queryClient:
+            ventes=venteProduit.objects.filter(client__nomCl__icontains=queryClient,centre=c).order_by(sort_by_vente)
+        elif (queryDateMin and queryDateMax):
+            ventes=venteProduit.objects.filter(dateVente__range=[queryDateMin,queryDateMax],centre=c).order_by(sort_by_vente)
+            transferts=TransfertMatierePremiere.objects.filter(dateTransfert__range=[queryDateMin,queryDateMax],centre=c).order_by(sort_by_transfert)
+        else:
+            ventes=venteProduit.objects.filter(centre=c).order_by(sort_by_vente)
+            transferts=TransfertMatierePremiere.objects.filter(centre=c).order_by(sort_by_transfert)
+
+        sommeTransferts=0
+        if transferts:
+            for t in transferts:
+                sommeTransferts+=t.CoutTrf
+
+        sommeVentes=0
+        for v in ventes:
+            v.montantTotal = v.qteVendu * v.prixVente
+            sommeVentes+=v.montantTotal
+        benefice=sommeVentes-sommeTransferts
+        return render(request,"centre/journal_vente.html",{'ventes':ventes,'centre_id':centre_id,'somme_ventes':sommeVentes,'benefice':benefice})
 
 def ajouter_vente(request,centre_id):
     if request.method == "POST":

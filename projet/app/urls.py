@@ -41,6 +41,8 @@ urlpatterns = [
     path('sectionCentre/<int:centre_id>',views.section_centre,name="section_centre"),
     #Activités du Centre
     path('activitesCentre/<int:centre_id>',views.activites_centre,name="activites_centre"),
+    #Journal des Transferts
+    path('journalTransfert/<int:centre_id>',views.journal_transfert,name="journal_transfert"),
     #Ventes des Produits
     path('journalVente/<int:centre_id>',views.journal_vente,name="journal_vente"),
     path('journalVente/ajouter/<int:centre_id>',views.ajouter_vente,name="addVente"),

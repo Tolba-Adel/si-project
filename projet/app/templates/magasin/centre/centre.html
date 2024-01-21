@@ -22,8 +22,6 @@
           <th></th>
           <th>Nom</th>
           <th>Numero</th>
-          <th></th>
-          <th></th>
         </tr>
       </thead>
       {% for c in centres %}
@@ -32,12 +30,6 @@
           <td>{{c.id}}</td>
           <td>{{c.nomC}}</td>
           <td>{{c.numeroC}}</td>
-          <td>
-            <a href="{% url 'editC' c.id %}">Modifier</a>
-          </td>
-          <td>
-            <a href="{% url 'deleteC' c.id %}">Supprimer</a>
-          </td>
         </tr>
       </tbody>
       {% endfor %}
@@ -46,9 +38,6 @@
     <p>Aucun Centre a afficher</p>
     {% endif %}
 
-    <a href="centre/ajouter">
-      <button>Ajouter un Centre</button>
-    </a>
     <br />
     <br />
 

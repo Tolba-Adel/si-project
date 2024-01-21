@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.db.models import Sum,ExpressionWrapper,F,FloatField
 from .models import fournisseur,client,employe,centre,absence,avanceSalaire,produit,venteProduit,TransfertMatierePremiere
-from .forms import clientForm,fournisseurForm,employeForm,centreForm,venteProduitForm,produitForm,paiementCreditForm
+from .forms import clientForm,fournisseurForm,employeForm,venteProduitForm,produitForm,paiementCreditForm
 
 #Home Page
 def index(request):
@@ -148,44 +148,6 @@ def afficher_centres(request):
         else:
             centres = centre.objects.all()
         return render(request,"magasin/centre/centre.html",{'centres':centres})
-
-def ajouter_centre(request):
-    if request.method == "POST":
-        form=centreForm(request.POST)
-        if form.is_valid():
-            form.save()
-            form=centreForm()
-            msg="Centre ajoutée avec succès"
-        else:
-            form=centreForm()
-            msg="Numéro du Centre deja existant"
-    else:
-        form=centreForm()
-        msg=""
-    return render(request,"magasin/centre/addCentre.html",{"form":form,"message":msg})
-
-def modifier_centre(request,pk):
-    c=centre.objects.get(id=pk)
-    if request.method == "POST":
-        form=centreForm(request.POST,instance=c)
-        if form.is_valid():
-            form.save()
-            return redirect("liste_centres")
-        else:
-            form=centreForm(instance=c)
-            msg="Numéro du Centre deja existant"
-            return render(request,"magasin/centre/editCentre.html",{"form":form,"message":msg})
-
-    else:
-        form=centreForm(instance=c)
-        return render(request,"magasin/centre/editCentre.html",{"form":form})
-
-def supprimer_centre(request,pk):
-    c=get_object_or_404(centre,id=pk)
-    if request.method == 'POST':
-        c.delete() 
-        return redirect('liste_centres')
-    return render(request,'magasin/centre/confirmDelete.html',{'centre':c})
 
 #Gestion Produit
 def afficher_produits(request):

@@ -24,15 +24,6 @@ class fournisseurForm(forms.ModelForm):
             'telephoneF': 'Telephone'
         }
 
-class centreForm(forms.ModelForm):
-    class Meta:
-        model = centre
-        fields="__all__"
-        labels = {
-            'nomC': 'Nom',
-            'numeroC':'Numéro'
-        }
-
 class employeForm(forms.ModelForm):
     class Meta:
         model = employe

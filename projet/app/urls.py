@@ -28,9 +28,6 @@ urlpatterns = [
     path('employe/delete/<int:pk>',views.supprimer_employe, name="deleteE"),
     #Centre
     path('centre',views.afficher_centres,name='liste_centres'),
-    path('centre/ajouter',views.ajouter_centre, name="addC"),
-    path('centre/edit/<int:pk>',views.modifier_centre, name="editC"),
-    path('centre/delete/<int:pk>',views.supprimer_centre, name="deleteC"),
     #Produit
     path('produit',views.afficher_produits,name='liste_produits'),
     path('produit/ajouter',views.ajouter_produit, name="addPrd"),

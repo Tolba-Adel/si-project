@@ -1,4 +1,5 @@
 from django.shortcuts import render,redirect,get_object_or_404
+from django.db.models import Sum,ExpressionWrapper,F,FloatField
 from .models import fournisseur,client,employe,centre,absence,avanceSalaire,produit,venteProduit,TransfertMatierePremiere
 from .forms import clientForm,fournisseurForm,employeForm,centreForm,venteProduitForm,produitForm,paiementCreditForm
 
@@ -227,6 +228,7 @@ def supprimer_produit(request,pk):
         return redirect('liste_produits')
     return render(request,'magasin/produit/confirmDelete.html',{'produit':prd})
 
+
 #Centre Section
 def section_centre(request,centre_id):
     centre_id=centre_id;
@@ -235,6 +237,7 @@ def section_centre(request,centre_id):
 #Activités du Centre
 def activites_centre(request,centre_id):
     return render(request,"centre/activitesCentre.html",{'centre_id':centre_id})
+
 #Journal des Transferts
 def journal_transfert(request,centre_id):
     if request.method == "GET":
@@ -255,7 +258,6 @@ def journal_transfert(request,centre_id):
         for t in transferts:
             sommeTransferts+=t.CoutTrf
         return render(request,"centre/journal_transfert.html",{'transferts':transferts,'centre_id':centre_id,'somme_transferts':sommeTransferts})
-
 
 #Ventes des Produits
 def journal_vente(request,centre_id):
@@ -289,8 +291,10 @@ def journal_vente(request,centre_id):
         for v in ventes:
             v.montantTotal = v.qteVendu * v.prixVente
             sommeVentes+=v.montantTotal
+            
         benefice=sommeVentes-sommeTransferts
         return render(request,"centre/journal_vente.html",{'ventes':ventes,'centre_id':centre_id,'somme_ventes':sommeVentes,'benefice':benefice})
+    return render(request,"centre/journal_vente.html",{'centre_id':centre_id})
 
 def ajouter_vente(request,centre_id):
     if request.method == "POST":
@@ -360,7 +364,6 @@ def paiement_credit(request, centre_id):
 
     return render(request, "centre/paiementCredit.html", {'form': form, "message": msg, 'centre_id': centre_id, 'cl': cl})
 
-
 #Module Employé
 def module_employe(request,centre_id):
     c=centre.objects.get(numeroC=centre_id)
@@ -415,7 +418,6 @@ def supprimer_absence(request,pk):
         return redirect("absence",pk=a.employe.id)
     return render(request,'centre/deleteAbsence.html',{'absence':a})
 
-
 #Systeme Avance Salaire
 def afficher_avanceSalaire(request,pk):
     e=employe.objects.get(id=pk)
@@ -449,3 +451,67 @@ def supprimer_avanceSalaire(request,pk):
         avanceS.delete()
         return redirect("avanceSalaire",pk=avanceS.employe.id)
     return render(request,"centre/delteAvanceSalaire.html",{'avanceSalaire':avanceS})
+
+
+#Tableux de Bord Section
+def analyse_vente(request):
+    return render(request,'tableauxDeBord/optionsCentres.html')
+
+def afficher_tableaux(request,centre_id):
+    if request.method == "GET":
+        queryAnneeMin=request.GET.get('anneeMin')
+        queryAnneeMax=request.GET.get('anneeMax')
+        if (queryAnneeMin and queryAnneeMax):
+            anneeMin=int(queryAnneeMin)
+            anneeMax=int(queryAnneeMax)
+            annees=range(anneeMin,anneeMax+1)
+
+            if(centre_id != 0):
+                c=centre.objects.get(numeroC=centre_id)
+                ventes=venteProduit.objects.filter(dateVente__year__range=(anneeMin,anneeMax),centre=c)
+                ventesAnneePrecedante=venteProduit.objects.filter(dateVente__year__range=(anneeMin-(anneeMax-anneeMin+1),anneeMin-1),centre=c)
+                transferts=TransfertMatierePremiere.objects.filter(dateTransfert__year__range=(anneeMin,anneeMax),centre=c)
+                transfertsAnneePrecedante=TransfertMatierePremiere.objects.filter(dateTransfert__year__range=(anneeMin-(anneeMax-anneeMin+1),anneeMin-1),centre=c)
+                produits=produit.objects.filter(
+                    venteproduit__dateVente__year__range=(anneeMin,anneeMax),venteproduit__centre=c
+                ).annotate(qte_sold=Sum('venteproduit__qteVendu')
+                ).order_by('-qte_sold')[:10]
+                clients=client.objects.filter(
+                    venteproduit__dateVente__year__range=(anneeMin,anneeMax),venteproduit__centre=c
+                ).annotate(
+                    total_sale=Sum(ExpressionWrapper(F('venteproduit__qteVendu') * F('venteproduit__prixVente'),output_field=FloatField()))
+                ).order_by('-total_sale')[:10]
+            else:
+                ventes=venteProduit.objects.filter(dateVente__year__range=(anneeMin,anneeMax))
+                ventesAnneePrecedante=venteProduit.objects.filter(dateVente__year__range=(anneeMin-(anneeMax-anneeMin+1),anneeMin-1))
+                transferts=TransfertMatierePremiere.objects.filter(dateTransfert__year__range=(anneeMin,anneeMax))
+                transfertsAnneePrecedante=TransfertMatierePremiere.objects.filter(dateTransfert__year__range=(anneeMin-(anneeMax-anneeMin+1),anneeMin-1))
+                produits=produit.objects.filter(
+                    venteproduit__dateVente__year__range=(anneeMin,anneeMax)
+                ).annotate(qte_sold=Sum('venteproduit__qteVendu')
+                ).order_by('-qte_sold')[:10]
+                clients=client.objects.filter(
+                    venteproduit__dateVente__year__range=(anneeMin,anneeMax)
+                ).annotate(
+                    total_sale=Sum(ExpressionWrapper(F('venteproduit__qteVendu') * F('venteproduit__prixVente'),output_field=FloatField()))
+                ).order_by('-total_sale')[:10]
+
+
+            totalVentes=ventes.aggregate(total_ventes=Sum(ExpressionWrapper(F('qteVendu') * F('prixVente'),output_field=FloatField())))['total_ventes'] or 0
+            totalVentesAnneePrecedante=ventesAnneePrecedante.aggregate(total_ventes_annee_precedante=Sum(ExpressionWrapper(F('qteVendu') * F('prixVente'),output_field=FloatField())))['total_ventes_annee_precedante'] or 0
+            if totalVentesAnneePrecedante > 0:
+                tauxVentes=((totalVentes-totalVentesAnneePrecedante)/totalVentesAnneePrecedante)*100
+            else:
+                tauxVentes=100
+
+            totalTransferts=transferts.aggregate(total_transferts=Sum('CoutTrf'))['total_transferts'] or 0
+            totalTransfertsAnneePrecedante=transfertsAnneePrecedante.aggregate(total_transferts_annee_precedante=Sum('CoutTrf'))['total_transferts_annee_precedante'] or 0
+
+            totalBenefice=totalVentes-totalTransferts
+            totalBeneficeAnneePrecedante=totalVentesAnneePrecedante-totalTransfertsAnneePrecedante
+            if totalBeneficeAnneePrecedante > 0:
+                tauxBenefice=((totalBenefice-totalBeneficeAnneePrecedante)/totalBeneficeAnneePrecedante)*100
+            else:
+                tauxBenefice=100
+            return render(request,'tableauxDeBord/tableaux.html',{'centre_id':centre_id,'annees':annees,'taux_ventes':tauxVentes,'taux_benefice':tauxBenefice,'ventes':ventes,'produits':produits,'clients':clients})
+    return render(request,'tableauxDeBord/tableaux.html',{'centre_id':centre_id})

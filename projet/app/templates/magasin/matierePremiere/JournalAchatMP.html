@@ -7,12 +7,29 @@
 </head>
 <body>
     <h1>Journal achat matiere Premières</h1>
-
-    <form method="GET">
-      <label for="search">Entrez le nom de la matière première:</label>
-      <input type="text" name="recherche" id="search" />
-      <button type="submit">rechercher</button>
-    </form>
+    <form method="GET" action="{% url 'liste_AchatmatierePremieres' %}" class="form-inline">
+      <div class="form-group">
+          <label for="dateAchat">Entrez la dateAchat:</label>
+          <input type="text" name="dateAchat" id="filter-dateAchat" class="form-control" />
+      </div> 
+      <div class="form-group">
+          <label for="fournisseur">Entrez le nom fournisseur:</label>
+          <input type="text" name="fournisseur" id="filter-fournisseur" class="form-control" />
+      </div> 
+      <div class="form-group">
+          <label for="MP">Entrez le nom de la matière première:</label>
+          <input type="text" name="MP" id="filter-MP" class="form-control" />
+      </div> 
+      <div class="form-group">
+          <label for="QteAchat">Entrez la Quantité:</label>
+          <input type="text" name="QteAchat" id="filter-QteAchat" class="form-control" />
+      </div>
+      <div class="form-group">
+          <label for="prixAchat">Entrez le prix:</label>
+          <input type="text" name="prixAchat" id="filter-prixAchat" class="form-control" />
+      </div>
+      <button type="submit" class="btn btn-outline-info">Filter</button>
+  </form>
     <br />
 
     <form method="GET" action="{% url 'liste_AchatmatierePremieres' %}">
@@ -24,7 +41,6 @@
           <option value="QteAchat">Quantite achetée</option>
           <option value="montantTotal">Montant Total</option>
           <option value="montantverse">Montant versé</option>
-          <option value="montantRestant">Montant Restant</option>
       </select>
       <button type="submit">Trier</button>
   </form>
@@ -41,9 +57,9 @@
           <th>prix Achat</th>
           <th>Montant Total</th>
           <th>Montant versé</th>
-          <th>Montant Restant</th>
         </tr>
       </thead>
+      
       {% for mpA in achatmatierePremieres %}
       <tbody>
         <tr>
@@ -55,28 +71,22 @@
           <td>{{mpA.prixAchat}}</td>
           <td>{{mpA.montantTotal}}</td>
           <td>{{mpA.montantverse}}</td>
-          <td>{{mpA.montantRestant}}</td>
           <td>
             <a href="{% url 'editAchatMP' mpA.id %}">Modifier</a>
           </td>
           <td>
             <a href="{% url 'deleteAchatMP' mpA.id %}">Supprimer</a>
           </td>
-          <td>
-            {% if mpA.montantRestant != 0 %} 
-            <a href="{% url 'ReglerAchatMP' %}">Regler Fournisseur</a>
-            {% endif %}
-          </td>
         </tr>
+        {% endfor %}
+
       </tbody>
-      {% endfor %}
     </table>
+    <p>Montant Total Achat ={{sommeachat}}</p></p>
     {% else %}
     <p>Aucune Matière Première a afficher</p>
-    {% endif %}
-    <a href="{% url 'liste_matierePremieres' %}">
-        <button>liste matiere Premiere</button>
-    </a>    
+    {% endif %}    
+    <a href="{% url 'ReglerAchatMP' %}"><button>Reglements Fournisseurs</button></a>
     <br />
     <br />
 

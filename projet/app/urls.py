@@ -26,27 +26,29 @@ urlpatterns = [
     path('employe/ajouter',views.ajouter_employe, name="addE"),
     path('employe/edit/<int:pk>',views.modifier_employe, name="editE"),
     path('employe/delete/<int:pk>',views.supprimer_employe, name="deleteE"),
-    #Centre
-    path('centre',views.afficher_centres,name='liste_centres'),
-    path('centre/ajouter',views.ajouter_centre, name="addC"),
-    path('centre/edit/<int:pk>',views.modifier_centre, name="editC"),
-    path('centre/delete/<int:pk>',views.supprimer_centre, name="deleteC"),
     #Matiere Premiere
     path('matierePremiere',views.afficher_matierePremieres,name='liste_matierePremieres'),
     path('matierePremiere/edit/<int:pk>/',views.modifier_matierePremiere, name="editMP"),
     path('matierePremiere/delete/<int:pk>',views.supprimer_matierePremiere, name="deleteMP"),
     #Achat Matiere Premiere
-    path('matierePremiere/AchatMatierePremiere',views.Achat_matierePremiere, name="addMP"),
-    path('matierePremiere/JournalAchatMatierePremiere',views.afficher_JournalAchatMP,name="liste_AchatmatierePremieres"),
-    path('matierePremiere/JournalAchatMatierePremiere/edit/<int:pk>/',views.modifier_AchatmatierePremiere, name="editAchatMP"),
-    path('matierePremiere/JournalAchatMatierePremiere/delete/<int:pk>',views.supprimer_AchatmatierePremiere, name="deleteAchatMP"),
-    path('matierePremiere/ReglementFournisseur',views.ReglementAchat_matierePremiere,name="ReglerAchatMP"),
+    path('AchatMatierePremiere',views.Achat_matierePremiere, name="addMP"),
+    path('JournalAchatMatierePremiere',views.afficher_JournalAchatMP,name="liste_AchatmatierePremieres"),
+    path('JournalAchatMatierePremiere/edit/<int:pk>/',views.modifier_AchatmatierePremiere, name="editAchatMP"),
+    path('JournalAchatMatierePremiere/delete/<int:pk>',views.supprimer_AchatmatierePremiere, name="deleteAchatMP"),
+    path('ReglementFournisseur',views.ReglementAchat_matierePremiere,name="ReglerAchatMP"),
+    path('get_solde/', views.get_solde, name='get_solde'),
     #Transfert Matiere Premiere
-    path('matierePremiere/TransfertMatierePremiere',views.Transfert_matierePremiere, name="TransMP"),
-    path('matierePremiere/JournalTransfertMatierePremiere',views.afficher_JournalTransfertMP, name="liste_TransfertmatierePremieres"),
+    path('TransfertMatierePremiere',views.Transfert_matierePremiere, name="TransMP"),
+    path('JournalTransfertMatierePremiere',views.afficher_JournalTransfertMP, name="liste_TransfertmatierePremieres"),
     #Vente Matiere Premiere
-    path('matierePremiere/VenteMatierePremiere',views.Vente_MatierePremiere, name="VenteMP"),
-    path('matierePremiere/JournalVenteMatierePremiere',views.afficher_JournalVenteMP, name="liste_VentematierePremieres"),
+    path('VenteMatierePremiere',views.Vente_MatierePremiere, name="VenteMP"),
+    path('JournalVenteMatierePremiere',views.afficher_JournalVenteMP, name="liste_VentematierePremieres"),
+    path('JournalVenteMatierePremiere/edit/<int:pk>/',views.modifier_VentematierePremiere, name="editVenteMP"),
+    path('JournalVenteMatierePremiere/delete/<int:pk>',views.supprimer_VentematierePremiere, name="deleteVenteMP"),
+    path('PaiementCredit',views.PaiementCredit_matierePremiere,name="PaiementCredMP"),
+    path('get_credit/', views.get_credit, name='get_credit'),
+    #Etat De Stock
+    path('EtatDeStock',views.afficher_etatStock, name="EtatSock"),
     #Centre Section
     path('sectionCentre/<int:centre_id>',views.section_centre,name="section_centre"),
     path('moduleEmploye/<int:centre_id>',views.module_employe,name="module_employe"),

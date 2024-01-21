@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etat De Stock</title>
+</head>
+<body>
+    <h1>Etat de stock</h1>
+    
+    <form method="GET" action="{% url 'EtatSock' %}" class="form-inline">
+      <div class="form-group">
+          <label for="matierepremier ">Entrez le nom de la matière première:</label>
+          <input type="text" name="matierepremier " id="filter-matierepremier" class="form-control" />
+      </div> 
+      <div class="form-group">
+          <label for="  typeTransaction">Entrez Type Transaction:</label>
+          <input type="text" name="  typeTransaction" id="filter-typeTransaction" class="form-control" />
+      </div> 
+      <div class="form-group">
+          <label for="prix ">Entrez Prix</label>
+          <input type="text" name="prix " id="filter-prix " class="form-control" />
+      </div> 
+      <div class="form-group">
+          <label for="QteTransaction ">Entrez la Quantité:</label>
+          <input type="text" name="QteTransaction " id="filter-QteTransaction " class="form-control" />
+      </div>
+      <div class="form-group">
+          <label for="montantTransaction">Entrez montant Transaction:</label>
+          <input type="text" name="montantTransaction" id="filter-montantTransaction" class="form-control" />
+      </div>
+      <button type="submit" class="btn btn-outline-info">Filter</button>
+  </form>
+    <br />
+      
+    {% if EtatStock %}
+    <table border="1px">
+      <thead>
+        <tr>
+          <th>Matiere Premiere</th>
+          <th>TypeTransaction</th>
+          <th>Prix</th>
+          <th>Quantite</th>
+          <th>montantTransaction</th>
+        </tr>
+      </thead>
+      {% for ES in EtatStock %}
+      <tbody>
+        <tr>
+          <td>{{ES.matierepremier}}</td>
+          <td>{{ES.typeTransaction}}</td>
+          <td>{{ES.prix}}</td>
+          <td>{{ES.QteTransaction }}</td>
+          <td>{{ES.montantTransaction}}</td>
+          
+        </tr>
+      </tbody>
+      {% endfor %}
+    </table>
+   <p> Total achat :{{sommestock}} </p>
+    {% else %}
+    <p>Pas de stock à afficher</p>
+    {% endif %}    
+    <br />
+    <br />
+
+    <a href="magasin">
+      <button>retourner</button>
+    </a>
+</body>
+</html>

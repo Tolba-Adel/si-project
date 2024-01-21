@@ -8,27 +8,45 @@
 <body>
     <h1>Journal Vente matiere Premières</h1>
 
-    <form method="GET">
-      <label for="search">Entrez le nom de la matière première:</label>
-      <input type="text" name="recherche" id="search" />
-      <button type="submit">rechercher</button>
-    </form>
+    <form method="GET" action="{% url 'liste_VentematierePremieres' %}" class="form-inline">
+      <div class="form-group">
+          <label for="dateVente ">Entrez la date de vente:</label>
+          <input type="text" name="dateVente " id="filter-dateVente" class="form-control" />
+      </div> 
+      <div class="form-group">
+          <label for="client">Entrez le nom client:</label>
+          <input type="text" name="client" id="filter-client" class="form-control" />
+      </div> 
+      <div class="form-group">
+          <label for="MPVendus">Entrez le nom de la matière première:</label>
+          <input type="text" name="MPVendus" id="filter-MPVendus" class="form-control" />
+      </div> 
+      <div class="form-group">
+          <label for="QteVds">Entrez la Quantité:</label>
+          <input type="text" name="QteVds" id="filter-QteVds" class="form-control" />
+      </div>
+      <div class="form-group">
+          <label for="prixUT">Entrez le prix:</label>
+          <input type="text" name="prixUT" id="filter-prixUT" class="form-control" />
+      </div>
+      <button type="submit" class="btn btn-outline-info">Filter</button>
+  </form>
     <br />
-    <form method="GET" action="{% url 'liste_TransfertmatierePremieres' %}">
+  
+    <form method="GET" action="{% url 'liste_VentematierePremieres' %}">
         <label for="sort_by">Trier par:</label>
         <select name="sort_by" id="sort_by">
-            <option value="dateVente">Date de Vente</option>
+            <option value="dateVente ">Date de Vente</option>
             <option value="client">Nom Client</option>
             <option value="MPVendus">Matiere Premiere</option>
             <option value="QteVds">Quantite vendue</option>
             <option value="prixUT">Prix de Vente</option>
             <option value="montantVente">Montant de Vente</option>
             <option value="montantEncaisse">Montant Encaissé</option>
-            <option value="ResteAPayer">Reste à payer</option>
         </select>
         <button type="submit">Trier</button>
     </form>
-
+    
     {% if ventematierePremieres %}
     <table border="1px">
       <thead>
@@ -41,7 +59,6 @@
           <th>Prix de Vente</th>
           <th>Montant de Vente</th>
           <th>Montant Encaissé</th>
-          <th>Reste à payer</th>
         </tr>
       </thead>
       {% for mpV in ventematierePremieres %}
@@ -55,19 +72,26 @@
           <td>{{mpV.prixUT}}</td>
           <td>{{mpV.montantVente}}</td>
           <td>{{mpV.montantEncaisse}}</td>
-          <td>{{mpV.ResteAPayer}}</td>
-          
+          <td>
+            <a href="{% url 'editVenteMP' mpV.id %}">Modifier</a>
+          </td>
+          <td>
+            <a href="{% url 'deleteVenteMP' mpV.id %}">Supprimer</a>
+          </td>
         </tr>
       </tbody>
       {% endfor %}
     </table>
+    <p>Montant Total Vente ={{sommeVente}}</p>
+    <p>Montant Total encaisse ={{ sommeencais }}</p>
+   
     {% else %}
     <p>Aucune Matière Première a afficher</p>
     {% endif %}
 
-    <a href="{% url 'liste_matierePremieres' %}">
-        <button>liste matiere Premiere</button>
-    </a>      
+    <a href="{% url 'PaiementCredMP' %}"><button>Paiement Credit</button></a>
+
+    
     <br />
     <br />
 

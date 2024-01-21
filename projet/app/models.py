@@ -77,58 +77,75 @@ class produit(models.Model):
         return self.nomP
 
 class matierePremiere(models.Model):
-    # codeM=models.AutoField(primary_key=True)
-    nomMP=models.CharField(max_length=50)
-    TypeMP=models.CharField(max_length=50)
-    Quantite=models.IntegerField()
-    Fournisseur=models.ForeignKey(fournisseur,on_delete=models.CASCADE,default=1)
+    # codeM = models.AutoField(primary_key=True)
+    nomMP = models.CharField(max_length=50)
+    TypeMP = models.CharField(max_length=50)
+    Quantite = models.IntegerField()
+    Fournisseur = models.ForeignKey(fournisseur,on_delete=models.CASCADE,default=1)
     def __str__(self):
         return self.nomMP
 
 class achat(models.Model):
-    # NumAchat=models.AutoField(primary_key=True,default=1)
-    dateAchat=models.DateTimeField(default=datetime.now)
-    fournisseur=models.ForeignKey(fournisseur,null=True,on_delete=models.CASCADE)
-    matieresAchetes=models.ForeignKey(matierePremiere,null=True,on_delete=models.CASCADE)
-    QteAchat=models.IntegerField(default=0)
-    prixAchat=models.FloatField(default=0)
-    montantTotal=models.FloatField(default=0)
-    montantverse=models.FloatField(default=0)
-    montantRestant=models.FloatField(default=0)
+    # NumAchat = models.AutoField(primary_key=True,default=1)
+    dateAchat = models.DateTimeField(default=datetime.now)
+    fournisseur = models.ForeignKey(fournisseur,null=True,on_delete=models.SET_NULL)
+    matieresAchetes = models.ForeignKey(matierePremiere,null=True,on_delete=models.CASCADE)
+    QteAchat = models.IntegerField(default=0)
+    prixAchat = models.FloatField(default=0)
+    montantTotal = models.FloatField(default=0)
+    montantverse = models.FloatField(default=0)
+    montantRestant = models.FloatField(default=0)
     def __str__(self):
         return f"{self.matieresAchetes}"
 
 class ReglementFournisseur(models.Model):
-    dateReg=models.DateTimeField(default=datetime.now)
-    Fournisseur=models.ForeignKey(fournisseur,on_delete=models.CASCADE,default=1)
-    solde=models.FloatField(default=0)
-    montantReg=models.FloatField(default=0)
+    dateReg = models.DateTimeField(default=datetime.now)
+    Fournisseur = models.ForeignKey(fournisseur,on_delete=models.SET_NULL,null=True, blank=True,default=1)
+    solde = models.FloatField(default=0)
+    montantReg = models.FloatField(default=0)
     def __str__(self):
         return f"Reglement fournisseur: {self.Fournisseur}"
 
 
 class TransfertMatierePremiere(models.Model):
     # codeTransfert=models.AutoField(primary_key=True)
-    dateTransfert=models.DateTimeField(default=datetime.now)
-    centre=models.ForeignKey(centre, on_delete=models.CASCADE)
-    MatieresTransferes=models.ForeignKey(achat, on_delete=models.CASCADE)
-    QteTrf=models.IntegerField()
-    PrixUTA=models.FloatField(default=0)
-    CoutTrf=models.IntegerField(default=0) 
+    dateTransfert = models.DateTimeField(default=datetime.now)
+    centre = models.ForeignKey(centre, on_delete=models.CASCADE)
+    MatieresTransferes = models.ForeignKey(matierePremiere, on_delete=models.CASCADE)
+    QteTrf = models.IntegerField()
+    PrixUTA = models.FloatField(default=0)
+    CoutTrf = models.IntegerField(default=0) 
     def __str__(self):
         return f"Transfert #{self.id}"
 
 
 
 class VenteMatierePremiere(models.Model):
-    # codeVenteMP=models.AutoField(primary_key=True)
-    dateVente=models.DateTimeField(default=datetime.now)
-    client=models.ForeignKey(client,null=True,on_delete=models.CASCADE)
-    MPVendus=models.ForeignKey(matierePremiere,null=True,on_delete=models.CASCADE)
-    QteVds=models.IntegerField(default=0)
-    prixUT=models.FloatField(default=0)
-    montantVente=models.FloatField(default=0)
-    montantEncaisse=models.FloatField(default=0)
-    ResteAPayer=models.FloatField(default=0)
+    # codeVenteMP = models.AutoField(primary_key=True)
+    dateVente = models.DateTimeField(default=datetime.now)
+    client = models.ForeignKey(client,null=True,on_delete=models.CASCADE)
+    MPVendus = models.ForeignKey(matierePremiere,null=True,on_delete=models.CASCADE)
+    QteVds = models.IntegerField(default=0)
+    prixUT = models.FloatField(default=0)
+    montantVente = models.FloatField(default=0)
+    montantEncaisse = models.FloatField(default=0)
+    ResteAPayer = models.FloatField(default=0)
     def __str__(self):
         return f"{self. MPVendus}"
+
+class PaiementCredit(models.Model):
+    DatePventeMP = models.DateTimeField(default=datetime.now)
+    client= models.ForeignKey(client,null=True,on_delete=models.CASCADE)
+    credit = models.FloatField(default=0)
+    montantPayMP = models.FloatField(default=0)
+    def __str__(self):
+        return f"Paiement Credit {self.client}"
+
+class Stock(models.Model):
+    matierepremier = models.CharField(max_length=50)
+    typeTransaction = models.CharField(max_length=50)
+    prix = models.FloatField(default=0)
+    QteTransaction = models.IntegerField()
+    montantTransaction = models.FloatField(default=0)
+    def __str__(self):
+        return  f"{self.typeTransaction} - {self.matierepremier} "

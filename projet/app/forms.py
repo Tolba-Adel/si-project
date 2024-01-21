@@ -1,6 +1,6 @@
 from django.db.models import fields
 from django import forms
-from .models import client,fournisseur,centre,employe,matierePremiere,achat,TransfertMatierePremiere,ReglementFournisseur,VenteMatierePremiere
+from .models import client,fournisseur,centre,employe,matierePremiere,achat,TransfertMatierePremiere,ReglementFournisseur,VenteMatierePremiere,PaiementCredit
 import calculation
 from django_select2 import forms as s2forms
 
@@ -71,43 +71,31 @@ class fournisseurWidget(s2forms.ModelSelect2Widget):
         "nomF__icontains",
     ]
 
+
 class matieresAchetesWidget(s2forms.ModelSelect2Widget):
     search_fields = [
         "nomMP__icontains",
     ]
 
-class AchatmatierePremiereForm(forms.ModelForm):
-   
+class AchatmatierePremiereForm(forms.ModelForm): 
     montantTotal=forms.IntegerField(widget=calculation.FormulaInput('QteAchat*prixAchat', attrs={'readonly': 'readonly'}),label='Montant Total',disabled=False, required=False  )
     montantRestant=forms.IntegerField(widget=calculation.FormulaInput('montantTotal - montantverse', attrs={'readonly': 'readonly'}),label='Montant Restant',disabled=False, required=False  )
-
     class Meta:
         model = achat
         fields="__all__"
-        labels = {
-            'dateAchat': 'Date Achat',
-            'fournisseur': "Fournisseur",
-            'matieresAchetes.nomMP': "Matiere Premiere",
-            'QteAchat':'Quantite achetée',
-            'prixAchat':'prix Achat',
-            'montantTotal': 'Montant Total',
-            'montantverse':'Montant versé',
-            'montantRestant':'Montant Restant'
-        }
-
-
         widgets = {
-            "fournisseur": fournisseurWidget,
+            "fournisseur": fournisseurWidget(attrs={'required': False}), 
             "matieresAchetes": matieresAchetesWidget,
         }
 
+class matierestransfertWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "nomMP__icontains",
+    ]
 class TransfertmatierePremiereForm(forms.ModelForm):
     centre=centre.numeroC
-    MatieresTransferes = forms.ModelChoiceField(
-         queryset=achat.objects.prefetch_related('matieresAchetes'),
-    )
-    PrixUTA = forms.IntegerField(widget=forms.HiddenInput(),label='Cout de Transfert',disabled=False, required=False  )
-    CoutTrf=forms.IntegerField(widget=forms.HiddenInput(),label='Cout de Transfert',disabled=False, required=False)
+    # PrixUTA = forms.FloatField(widget=forms.HiddenInput(),label='Cout de Transfert',disabled=False, required=False  )
+    # CoutTrf=forms.IntegerField(widget=forms.HiddenInput(),label='Cout de Transfert',disabled=False, required=False)
     
     
     
@@ -122,21 +110,30 @@ class TransfertmatierePremiereForm(forms.ModelForm):
             'PrixUTA':'Prix Unitaire',
             'CoutTrf':'Cout de Transfert'
         }
-    
 
+        widgets = {
+            "MatieresTransferes": matierestransfertWidget,
+        }
+
+    
+class fournisseurregWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "nomF__icontains",
+    ]
 class ReglementMPForm(forms.ModelForm):
-    solde=forms.FloatField(widget=calculation.FormulaInput('montantRestant*1', attrs={'readonly': 'readonly'}),label='solde',required=False)
-   
     class Meta:
         model = ReglementFournisseur
-        fields="__all__"
-        labels = {
-            'dateReg': 'Date Reglement',
-            'Fournisseur': "Nom Fournisseur",
-            'solde' : 'solde fournisseur',
-            'montantReg': "Montant Reglement",
-  
+        fields="__all__"        
+        widgets = {
+            "Fournisseur": fournisseurregWidget, 
         }
+
+    def __init__(self, *args, **kwargs):
+        super(ReglementMPForm, self).__init__(*args, **kwargs)
+        self.fields['solde'].widget.attrs['readonly'] = True
+        self.fields['Fournisseur'].initial = None
+        self.fields['Fournisseur'].widget.attrs['class'] = 'fournisseur-dropdown'
+
 
 class matieresVendueWidget(s2forms.ModelSelect2Widget):
     search_fields = [
@@ -164,4 +161,29 @@ class VentematierePremiereForm(forms.ModelForm):
         widgets = {
             "MPVendus": matieresVendueWidget,
         }
+
+class clientWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "nomCl__icontains",
+    ]
+
+class PaiementMPForm(forms.ModelForm):
+    class Meta:
+        model = PaiementCredit
+        fields="__all__"      
+        labels = {
+            'DatePventeMP ': 'Date de Vente',
+            'client': 'Nom Client',
+            'credit': 'Credit',
+            'montantPayMP': 'Montant Paiement',
+          }  
+        widgets = {
+            "client": clientWidget, 
+        }
+        
+    def __init__(self, *args, **kwargs):
+        super(PaiementMPForm, self).__init__(*args, **kwargs)
+        self.fields['credit'].widget.attrs['readonly'] = True
+        self.fields['client'].initial = None
+        self.fields['client'].widget.attrs['class'] = 'client-dropdown'
 

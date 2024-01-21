@@ -10,7 +10,7 @@
         } 
         select {width: 10% } 
         </style>
-        <title>Reglement Fournisseur</title>
+        <title>Paiement Credit</title>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     </head>
     <body>
@@ -19,35 +19,35 @@
         {% csrf_token %} {{ form.as_p}}
         <script>
           $(document).ready(function () {
-              // Add an event listener to the Fournisseur dropdown
-              $('.fournisseur-dropdown').change(function () {
-                  var fournisseurId = $(this).val();
-
-                  // Fetch solde via AJAX or directly from the rendered data
+              $('.client-dropdown').change(function () {
+                  var clientId = $(this).val();
 
                   $.ajax({
-                      url: '/get_solde/',  // Replace with your actual URL to fetch solde
+                      url: '/get_credit/', 
                       method: 'GET',
-                      data: { 'fournisseur_id': fournisseurId },
+                      data: { 'client_id': clientId },
                       success: function (data) {
-                          // Update the "solde" field
-                          $('#id_solde').val(data.solde);
+                          $('#id_credit').val(data.credit);
                       }
                   });
               });
           });
       </script>
-        <input type="submit" value="Confirmer Reglement" />
+        <input type="submit" value="Confirmer Paiement" />
       </form>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js">
     </script>
     {{ form.media.js }}
     <p>{{message}}</p>
-
-    <a href="{% url 'liste_AchatmatierePremieres' %}">
-      <button>Journal achat Matière Premières</button>
+    <a href="{% url 'liste_VentematierePremieres' %}">
+      <button>Journal vente Matière Premières</button>
     </a> 
+    <br />
+
+    <a href="magasin">
+      <button>retourner</button>
+    </a>
   
 </body>
 </html> 

@@ -54,3 +54,5 @@ The `require_GET` decorator in Django is used to ensure that a view can only be 
 ### *django_select2.forms as s2forms*
 imports the forms module from the `django_select2` package and assign it an alias s2forms. `django_select2` enhances the standard Django select input fields by integrating the `Select2 library`. It adds a search input box to select fields, allowing users to easily search and select options.   
 
+### *django.db.models.sum*
+`sum` is functionality that does the sum inside the view

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analyse Des Ventes</title>
+  </head>
+  <body>
+    {% if centre_id == 0 %}
+    <h1>Analyse Des Ventes De Tous Les Centres</h1>
+    {% else %}
+    <h1>Analyse Des Ventes Du Centre {{ centre_id }}</h1>
+    {% endif %}
+
+    <form method="GET">
+      <label for="search1">Entrez l'Année Min:</label>
+      <input type="number" step="1" name="anneeMin" id="search1" />
+      <label for="search2">Entrez l'Année Max:</label>
+      <input type="number" step="1" name="anneeMax" id="search2" />
+      <button type="submit">Rechercher</button>
+    </form>
+    <br />
+
+    {% if annees %} 
+      <h2>Année 
+      {% for a in annees %}
+        {{a}}
+        {% if not forloop.last %},{% endif %}
+      {% endfor %} :
+      </h2>
+    {% endif %}
+    <p>Taux d'évolution Des Ventes = {{taux_ventes}}%</p>
+    <p>Taux d'évolution Des Bénéfice = {{taux_benefice}}%</p>
+
+    <h2>Produits Best-Sellers</h2>
+    {% if produits %}
+    <table border="1px">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Nom</th>
+          <th>Quantité Vendu</th>
+        </tr>
+      </thead>
+      {% for p in produits %}
+      <tbody>
+        <tr>
+          <td>{{forloop.counter}}</td>
+          <td>{{p.nomP}}</td>
+          <td>{{p.qte_sold}}</td>
+        </tr>
+      </tbody>
+      {% endfor %}
+    </table>
+    {% else %}
+    <p>Aucun Produit a afficher</p>
+    {% endif %}
+
+    <h2>Top Clients</h2>
+    {% if clients %}
+    <table border="1px">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Nom</th>
+          <th>Prenom</th>
+          <th>Totale Des Achats</th>
+        </tr>
+      </thead>
+      {% for cl in clients %}
+      <tbody>
+        <tr>
+          <td>{{forloop.counter}}</td>
+          <td>{{cl.nomCl}}</td>
+          <td>{{cl.prenomCl}}</td>
+          <td>{{cl.total_sale}}</td>
+        </tr>
+      </tbody>
+      {% endfor %}
+    </table>
+    {% else %}
+    <p>Aucun Client a afficher</p>
+    {% endif %}
+
+    <br />
+    <a href="/analyseVente">
+      <button>Retourner</button>
+    </a>
+  </body>
+</html>

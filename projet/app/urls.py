@@ -37,6 +37,7 @@ urlpatterns = [
     path('produit/edit/<int:pk>',views.modifier_produit, name="editPrd"),
     path('produit/delete/<int:pk>',views.supprimer_produit, name="deletePrd"),
 
+
     #Centre Section
     path('sectionCentre/<int:centre_id>',views.section_centre,name="section_centre"),
     #Activités du Centre
@@ -63,5 +64,9 @@ urlpatterns = [
     path('avanceSalaire/edit/<int:pk>',views.modifier_avanceSalaire,name="editavanceSalaire"),
     path('avanceSalaire/delete/<int:pk>',views.supprimer_avanceSalaire,name="deleteavanceSalaire"),
 
+
+    #Tableux de Bord Section
+    path('analyseVente',views.analyse_vente,name="analyse_vente"),
+    path('tableauxDeBord/<int:centre_id>',views.afficher_tableaux,name="tableaux_de_bord"),
 
 ]

@@ -80,7 +80,7 @@ class venteProduit(models.Model):
     def __str__(self):
         return f"{self.id}-{self.client.nomCl} {self.produitVendu}"
     
-class paiementCredit(models.Model):
+class paiementCred(models.Model):
     datePaiement=models.DateTimeField(default=datetime.now)
     client=models.ForeignKey(client,on_delete=models.CASCADE)
     montantPaiement=models.FloatField(null=True,blank=True)

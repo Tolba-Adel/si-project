@@ -1,5 +1,5 @@
 from .models import fournisseur,client,employe,centre,absence,avanceSalaire,produit,venteProduit,matierePremiere,TransfertMatierePremiere,achat,TransfertMatierePremiere,ReglementFournisseur,VenteMatierePremiere,PaiementCredit,Stock
-from .forms import clientForm,fournisseurForm,employeForm,venteProduitForm,produitForm,paiementCreditForm,matierePremiereForm,AchatmatierePremiereForm,TransfertmatierePremiereForm,ReglementMPForm,VentematierePremiereForm,PaiementMPForm
+from .forms import clientForm,fournisseurForm,employeForm,venteProduitForm,produitForm,paiementCredForm,matierePremiereForm,AchatmatierePremiereForm,TransfertmatierePremiereForm,ReglementMPForm,VentematierePremiereForm,PaiementMPForm
 from django.shortcuts import render,redirect,get_object_or_404
 from django.db.models import Sum,ExpressionWrapper,F,FloatField,fields
 from django.views.decorators.http import require_GET
@@ -621,7 +621,7 @@ def ajouter_vente(request,centre_id):
 #Paiement Crédit Client
 def paiement_credit(request, centre_id):
     cl = None
-    form = paiementCreditForm()
+    form = paiementCredForm()
     msg = ""
 
     if request.method == "POST":
@@ -629,7 +629,7 @@ def paiement_credit(request, centre_id):
         if query:
             cl = client.objects.get(nomCl__icontains=query)
         
-        form = paiementCreditForm(request.POST)
+        form = paiementCredForm(request.POST)
         if form.is_valid():
             if cl:
                 montant_paiement=request.POST.get("montantPaiement")
@@ -639,7 +639,7 @@ def paiement_credit(request, centre_id):
                     form.instance.client = cl
                     form.save()
                     msg = "Paiement effectué avec succès"
-                    form = paiementCreditForm()
+                    form = paiementCredForm()
             else:
                 msg="Client non trouvé"
 

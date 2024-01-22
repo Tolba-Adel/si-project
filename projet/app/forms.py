@@ -1,7 +1,7 @@
 from django.db.models import fields
 from django import forms
-from .models import client,fournisseur,centre,employe,produit,venteProduit,paiementCredit,matierePremiere,achat,TransfertMatierePremiere,ReglementFournisseur,VenteMatierePremiere,PaiementCredit
-import calculation
+from .models import client,fournisseur,centre,employe,produit,venteProduit,paiementCred,matierePremiere,achat,TransfertMatierePremiere,ReglementFournisseur,VenteMatierePremiere,PaiementCredit
+import calculation 
 from django_select2 import forms as s2forms
 
 
@@ -67,9 +67,9 @@ class venteProduitForm(forms.ModelForm):
             'montantVerse':'Montant Versé'
         }
 
-class paiementCreditForm(forms.ModelForm):
+class paiementCredForm(forms.ModelForm):
     class Meta:
-        model=paiementCredit
+        model=paiementCred
         exclude=['client']
         labels={
             'datePaiement':'Date',

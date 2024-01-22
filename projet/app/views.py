@@ -529,7 +529,7 @@ def journal_transfert(request,centre_id):
         queryDateMax=request.GET.get('dateMax')
 
         if query:
-            transferts=TransfertMatierePremiere.objects.filter(MatieresTransferes__matieresAchetes__nomMP__icontains=query,centre=c).order_by(sort_by)
+            transferts=TransfertMatierePremiere.objects.filter(MatieresTransferes__nomMP__icontains=query,centre=c).order_by(sort_by)
         elif (queryDateMin and queryDateMax):
             transferts=TransfertMatierePremiere.objects.filter(dateTransfert__range=[queryDateMin,queryDateMax],centre=c).order_by(sort_by)
         else:

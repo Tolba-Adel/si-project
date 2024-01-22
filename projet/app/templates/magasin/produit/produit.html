@@ -3,52 +3,54 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Matière Premières</title>
+    <title>Produits</title>
   </head>
   <body>
-    <h1>Liste de Matière Premières</h1>
+    <h1>Liste des Produits</h1>
 
     <form method="GET">
-      <label for="search">Entrez le nom de la matière première:</label>
+      <label for="search">Entrez le nom du produit:</label>
       <input type="text" name="recherche" id="search" />
       <button type="submit">rechercher</button>
     </form>
     <br />
 
-    {% if matierePremieres %}
+    {% if produits %}
     <table border="1px">
       <thead>
         <tr>
           <th></th>
           <th>Nom</th>
-          <th>Type</th>
-          <th>Quantite</th>
-          <th></th>
+          <th>Quantité</th>
           <th></th>
           <th></th>
         </tr>
       </thead>
-      {% for mp in matierePremieres %}
+      {% for prd in produits %}
       <tbody>
         <tr>
-          <td>{{mp.id}}</td>
-          <td>{{mp.nomMP}}</td>
-          <td>{{mp.TypeMP}}</td>
-          <td>{{mp.Quantite}}</td>
+          <td>{{prd.id}}</td>
+          <td>{{prd.nomP}}</td>
+          <td>{{prd.qte}}</td>
           <td>
-            <a href="{% url 'editMP' mp.id %}">Modifier</a>
+            <a href="{% url 'editPrd' prd.id %}">Modifier</a>
           </td>
           <td>
-            <a href="{% url 'deleteMP' mp.id %}">Supprimer</a>
+            <a href="{% url 'deletePrd' prd.id %}">Supprimer</a>
           </td>
         </tr>
       </tbody>
       {% endfor %}
     </table>
     {% else %}
-    <p>Aucune Matière Première a afficher</p>
+    <p>Aucun Produit a afficher</p>
     {% endif %}
-    
+
+    <a href="produit/ajouter">
+      <button>Ajouter un Produit</button>
+    </a>
+    <br />
+    <br />
     <a href="magasin">
       <button>retourner</button>
     </a>

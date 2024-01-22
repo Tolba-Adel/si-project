@@ -1,0 +1,19 @@
+<form method="POST" action="{% url 'paiement_credit' centre_id=centre_id %}">
+  {% csrf_token %}
+  <label for="search">Entrez le nom du client:</label>
+  <input type="text" name="search" id="search" value="{{cl.nomCl}}"/>
+  <button type="submit">Rechercher</button>
+  <br />
+
+  {% if cl %}
+    <p>Credit ={{cl.credit}}</p>
+  {% endif %}
+
+  {{form.as_p}}
+  <input type="submit" value="Ajouter" />
+</form>
+<p>{{message}}</p>
+
+<a href="{% url 'activites_centre' centre_id=centre_id %}">
+  <button>retouner</button>
+</a>

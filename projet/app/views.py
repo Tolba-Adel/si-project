@@ -1,6 +1,9 @@
+from .models import fournisseur,client,employe,centre,absence,avanceSalaire,produit,venteProduit,matierePremiere,TransfertMatierePremiere,achat,TransfertMatierePremiere,ReglementFournisseur,VenteMatierePremiere,PaiementCredit,Stock
+from .forms import clientForm,fournisseurForm,employeForm,venteProduitForm,produitForm,paiementCreditForm,matierePremiereForm,AchatmatierePremiereForm,TransfertmatierePremiereForm,ReglementMPForm,VentematierePremiereForm,PaiementMPForm
 from django.shortcuts import render,redirect,get_object_or_404
-from .models import fournisseur,client,employe,centre,matierePremiere,absence,avanceSalaire,achat,TransfertMatierePremiere,ReglementFournisseur,VenteMatierePremiere
-from .forms import clientForm,fournisseurForm,employeForm,centreForm,matierePremiereForm,AchatmatierePremiereForm,TransfertmatierePremiereForm,ReglementMPForm,VentematierePremiereForm
+from django.db.models import Sum,ExpressionWrapper,F,FloatField,fields
+from django.views.decorators.http import require_GET
+from django.http import JsonResponse
 
 #Home Page
 def index(request):
@@ -56,7 +59,6 @@ def supprimer_client(request,pk):
     # Si la requête est une GET, afficher la page de confirmation de suppression
     return render(request, 'magasin/client/confirmDelete.html', {'client': cl})
 
-
 #Gestion Fournisseur
 def afficher_fournisseurs(request):
     if request.method == "GET":
@@ -97,7 +99,6 @@ def supprimer_fournisseur(request,pk):
         f.delete() 
         return redirect('liste_fournisseurs')
     return render(request,'magasin/fournisseur/confirmDelete.html',{'fournisseur': f})
-
 
 #Gestion Employe
 def afficher_employes(request):
@@ -140,7 +141,6 @@ def supprimer_employe(request,pk):
         return redirect('liste_employes')
     return render(request,'magasin/employe/confirmDelete.html',{'employe':e})
 
-
 #Gestion Centre
 def afficher_centres(request):
     if request.method == "GET":
@@ -151,47 +151,49 @@ def afficher_centres(request):
             centres = centre.objects.all()
         return render(request,"magasin/centre/centre.html",{'centres':centres})
 
-def ajouter_centre(request):
+#Gestion Produit
+def afficher_produits(request):
+    if request.method == "GET":
+        query = request.GET.get('recherche')
+        if query:
+            produits=produit.objects.filter(nomP__icontains=query)
+        else:
+            produits = produit.objects.all()
+        return render(request,"magasin/produit/produit.html",{'produits':produits})
+
+def ajouter_produit(request):
     if request.method == "POST":
-        form=centreForm(request.POST)
+        form=produitForm(request.POST)
         if form.is_valid():
             form.save()
-            form=centreForm()
-            msg="Centre ajoutée avec succès"
-        else:
-            form=centreForm()
-            msg="Numéro du Centre deja existant"
+            form=produitForm()
+            msg="Produit ajoutée avec succès"
+            return render(request,"magasin/produit/addProduit.html",{'form':form,"message":msg})
     else:
-        form=centreForm()
+        form=produitForm()
         msg=""
-    return render(request,"magasin/centre/addCentre.html",{"form":form,"message":msg})
+        return render(request,"magasin/produit/addProduit.html",{"form":form,"message":msg})
 
-def modifier_centre(request,pk):
-    c=centre.objects.get(id=pk)
+def modifier_produit(request,pk):
+    prd=produit.objects.get(id=pk)
     if request.method == "POST":
-        form=centreForm(request.POST,instance=c)
+        form=produitForm(request.POST,instance=prd)
         if form.is_valid():
             form.save()
-            return redirect("liste_centres")
-        else:
-            form=centreForm(instance=c)
-            msg="Numéro du Centre deja existant"
-            return render(request,"magasin/centre/editCentre.html",{"form":form,"message":msg})
-
+            return redirect("liste_produits")
     else:
-        form=centreForm(instance=c)
-        return render(request,"magasin/centre/editCentre.html",{"form":form})
+        form=produitForm(instance=prd)
+        return render(request,"magasin/produit/editProduit.html",{"form":form})
 
-def supprimer_centre(request,pk):
-    c=get_object_or_404(centre,id=pk)
+def supprimer_produit(request,pk):
+    prd=get_object_or_404(produit,id=pk)
     if request.method == 'POST':
-        c.delete() 
-        return redirect('liste_centres')
-    return render(request,'magasin/centre/confirmDelete.html',{'centre':c})
+        prd.delete() 
+        return redirect('liste_produits')
+    return render(request,'magasin/produit/confirmDelete.html',{'produit':prd})
 
 
 #Gestion Matiere Premiere
-
 def afficher_matierePremieres(request):
     if request.method == "GET":
         query = request.GET.get('recherche')
@@ -200,7 +202,7 @@ def afficher_matierePremieres(request):
         else:
             matierePremieres=matierePremiere.objects.all()
         return render(request,"magasin/matierePremiere/matierePremiere.html",{'matierePremieres':matierePremieres})
-
+    
 def modifier_matierePremiere(request,pk):
     mp=matierePremiere.objects.get(id=pk)
     if request.method == "POST":
@@ -219,9 +221,7 @@ def supprimer_matierePremiere(request,pk):
         return redirect('liste_matierePremieres')
     return render(request,'magasin/matierePremiere/confirmDelete.html',{'matierePremiere':mp})
 
-
 #Achat matiere premiere
-
 def Achat_matierePremiere(request):
     if request.method == "POST":
         form=AchatmatierePremiereForm(request.POST)
@@ -231,8 +231,17 @@ def Achat_matierePremiere(request):
             selectedMP.Quantite = selectedMP.Quantite + int(form['QteAchat'].value())
             selectedMP.save()
             solFour = fournisseur.objects.get(pk=form['fournisseur'].value()[0])
-            solFour.solde=solFour.solde + int(form['montantRestant'].value())
+            solFour.solde=solFour.solde + float(form['montantRestant'].value())
             solFour.save()
+
+            stock_instance = Stock(
+                matierepremier = selectedMP,
+                typeTransaction = "achat",
+                prix = float(form['prixAchat'].value()),
+                QteTransaction = int(form['QteAchat'].value()), 
+                montantTransaction = float(form['montantTotal'].value()),
+            )
+            stock_instance.save()
             form.save()
             form=AchatmatierePremiereForm()
             msg="Achat Matière Première avec succès"
@@ -243,15 +252,13 @@ def Achat_matierePremiere(request):
         msg=""
         return render(request,"magasin/matierePremiere/AchatMatierePremiere.html",{"form":form,"message":msg})
 
+#Reglement achat
 def ReglementAchat_matierePremiere(request):
     if request.method == "POST":
         form=ReglementMPForm(request.POST)
         if form.is_valid():
-            # selectedF = form.save(commit = False)
-            # selectedF.solde = fournisseur.objects.get(pk=form['solde'].value()[0]).solde
-            # selectedF.save()
-            editSoldeF = achat.objects.get(pk=form['Fournisseur'].value()[0])
-            editSoldeF.montantRestant = editSoldeF.montantRestant - float(form['montantReg'].value())
+            editSoldeF = fournisseur.objects.get(pk=form['Fournisseur'].value()[0])
+            editSoldeF.solde = editSoldeF.solde - float(form['montantReg'].value())
             editSoldeF.save()
             form.save()
             form=ReglementMPForm()
@@ -263,19 +270,37 @@ def ReglementAchat_matierePremiere(request):
         msg=""
         return render(request,"magasin/matierePremiere/ReglementAchat.html",{"form":form,"message":msg})
 
+
+@require_GET
+def get_solde(request):
+    fournisseur_id = request.GET.get('fournisseur_id')
+    solde = fournisseur.objects.get(pk=fournisseur_id).solde
+    return JsonResponse({'solde': solde})
+
 # Journal Achat Matiere Premiere
-
 def afficher_JournalAchatMP(request):
-      if request.method == "GET":
-          query = request.GET.get('recherche')
-          sort_by = request.GET.get('sort_by', 'dateAchat')
-          if query:
-              achatmatierePremieres=achat.objects.filter(matieresAchetes__nomMP__icontains=query).order_by(sort_by)
-          else:
-              achatmatierePremieres=achat.objects.all().order_by(sort_by)
+    if request.method == "GET":
+        MP = request.GET.get('MP')
+        dateAchat = request.GET.get('dateAchat')
+        fournisseur = request.GET.get('fournisseur')
+        QteAchat = request.GET.get('QteAchat')
+        prixAchat = request.GET.get('prixAchat')
+        sort_by = request.GET.get('sort_by', 'dateAchat')
+        filter_query = {}
+        if MP:
+            filter_query['matieresAchetes__nomMP__icontains']=MP
+        if dateAchat:
+            filter_query['dateAchat__icontains']=dateAchat
+        if fournisseur:
+            filter_query['fournisseur__nomF__icontains']=fournisseur
+        if QteAchat:
+            filter_query['QteAchat__icontains']=QteAchat
+        if prixAchat:
+            filter_query['prixAchat__icontains']=prixAchat
+        achatmatierePremieres=achat.objects.filter(**filter_query).order_by(sort_by)
+        sommeachat = achatmatierePremieres.aggregate(total_montant=Sum('montantTotal'))['total_montant']
+        return render(request,'magasin/matierePremiere/JournalAchatMP.html',{"achatmatierePremieres":achatmatierePremieres,"sommeachat": sommeachat})
 
-          return render(request,'magasin/matierePremiere/JournalAchatMP.html',{"achatmatierePremieres":achatmatierePremieres})
-  
 def modifier_AchatmatierePremiere(request,pk):
     mp=achat.objects.get(id=pk)
     if request.method == "POST":
@@ -286,36 +311,42 @@ def modifier_AchatmatierePremiere(request,pk):
     else:
         form=AchatmatierePremiereForm(instance=mp)
         return render(request,"magasin/matierePremiere/EditAchatMatierePremiere.html",{"form":form})
-
+    
 def supprimer_AchatmatierePremiere(request,pk):
     mp=get_object_or_404(achat,id=pk)
+    sommeachat = 0 
     if request.method == 'POST':
             form=AchatmatierePremiereForm(request.POST)
-            selectedMP = matierePremiere.objects.get(pk=mp.matieresAchetes.all()[0].id)
-            selectedMP.Quantite = selectedMP.Quantite - int(mp.QteAchat)
-            selectedMP.save()
-            mp.delete() 
+            matiere_achetee = mp.matieresAchetes  
+            if matiere_achetee:
+                matiere_achetee.Quantite = matiere_achetee.Quantite - int(mp.QteAchat)
+                matiere_achetee.save()
+                mp.delete() 
             return redirect('liste_AchatmatierePremieres')
-    return render(request,'magasin/matierePremiere/DelAchatMatierePremiere.html',{'matierePremiere':mp})
+    return render(request,'magasin/matierePremiere/DelAchatMatierePremiere.html',{'matierePremiere':mp, 'sommeachat': sommeachat})
 
 # Transfert Matiere Premiere  
-
 def Transfert_matierePremiere(request):
-    
     if request.method == "POST":
         form=TransfertmatierePremiereForm(request.POST)
         print(form['MatieresTransferes'].value()[0])
         if form.is_valid():
             editForm = form.save(commit = False)
             editForm.PrixUTA = achat.objects.get(pk=form['MatieresTransferes'].value()[0]).prixAchat
-
-            editForm.CoutTrf = achat.objects.get(pk=form['MatieresTransferes'].value()[0]).prixAchat * int(form['QteTrf'].value())
-            
+            editForm.CoutTrf = achat.objects.get(pk=form['MatieresTransferes'].value()[0]).prixAchat * int(form['QteTrf'].value())           
             editForm.save()
             selectedMP = matierePremiere.objects.get(pk=form['MatieresTransferes'].value()[0])
             selectedMP.Quantite = selectedMP.Quantite - int(form['QteTrf'].value())
-
             selectedMP.save()
+            stock_instance = Stock(
+                matierepremier = selectedMP,
+                typeTransaction = "Transfert",
+                prix = editForm.PrixUTA,
+                QteTransaction = int(form['QteTrf'].value()), 
+                montantTransaction = editForm.CoutTrf ,
+            )
+            stock_instance.save()
+            form.save()
             form=TransfertmatierePremiereForm()
             msg="Transfert Matière Première avec succès"
             return render(request,"magasin/matierePremiere/TransfertMatierePremiere.html",{'form':form,"message":msg})
@@ -327,18 +358,28 @@ def Transfert_matierePremiere(request):
 
 # Journal de Transfert Matiere Premiere 
 def afficher_JournalTransfertMP(request):
-      if request.method == "GET":
-          query = request.GET.get('recherche')
-          sort_by = request.GET.get('sort_by', 'dateTransfert')
-          if query:
-              transfertmatierePremieres=TransfertMatierePremiere.objects.filter(MatieresTransferes__nomMP__icontains=query).order_by(sort_by)
-          else:
-              transfertmatierePremieres=TransfertMatierePremiere.objects.all().order_by(sort_by)
-
-          return render(request,'magasin/matierePremiere/JournalTransfertMP.html',{"transfertmatierePremieres":transfertmatierePremieres})
+    if request.method == "GET":
+        MatieresTransferes = request.GET.get('MatieresTransferes')
+        dateTransfert = request.GET.get('dateTransfert')
+        centre = request.GET.get('centre')
+        QteTrf = request.GET.get('QteTrf')
+        PrixUTA = request.GET.get('PrixUTA')
+        sort_by = request.GET.get('sort_by', 'dateTransfert')
+        filter_query = {}
+        if MatieresTransferes:
+            filter_query['MatieresTransferes__nomMP__icontains']=MatieresTransferes
+        if dateTransfert:
+            filter_query['dateTransfert__icontains']=dateTransfert
+        if centre:
+            filter_query['centre__numeroC__icontains']=client
+        if QteTrf:
+            filter_query['QteTrf__icontains']=QteTrf
+        if PrixUTA:
+            filter_query['PrixUTA__icontains']=PrixUTA
+        transfertmatierePremieres=TransfertMatierePremiere.objects.filter(**filter_query).order_by(sort_by)
+        return render(request,'magasin/matierePremiere/JournalTransfertMP.html',{"transfertmatierePremieres":transfertmatierePremieres})
 
 # Vente Matiere Premiere
-
 def Vente_MatierePremiere(request):
     if request.method == "POST":
         form=VentematierePremiereForm(request.POST)
@@ -350,6 +391,14 @@ def Vente_MatierePremiere(request):
             credCL = client.objects.get(pk=form['client'].value()[0])
             credCL.credit=credCL.credit + int(form['ResteAPayer'].value())
             credCL.save()
+            stock_instance = Stock(
+                matierepremier = selectedMP,
+                typeTransaction = "Vente",
+                prix = float(form['prixUT'].value()),
+                QteTransaction = int(form['QteVds'].value()), 
+                montantTransaction = float(form['montantVente'].value()),
+            )
+            stock_instance.save()
             form.save()
             form=VentematierePremiereForm()
             msg="Vente Matière Première avec succès"
@@ -360,23 +409,240 @@ def Vente_MatierePremiere(request):
         msg=""
         return render(request,"magasin/matierePremiere/VenteMatierePremiere.html",{"form":form,"message":msg})
 
+def PaiementCredit_matierePremiere(request):
+    if request.method == "POST":
+        form=PaiementMPForm(request.POST)
+        if form.is_valid():
+            editCreditCl = client.objects.get(pk=form['client'].value()[0])
+            editCreditCl.credit = editCreditCl.credit - float(form['montantPayMP'].value())
+            editCreditCl.save()
+            form.save()
+            form=PaiementMPForm()
+            msg="Paiement Credit Reglé avec succès"
+            return render(request,"magasin/matierePremiere/PaiementCredit.html",{'form':form,"message":msg})
+        return render(request,"magasin/matierePremiere/PaiementCredit.html",{'form':form,"message":""})
+    else:
+        form=PaiementMPForm()
+        msg=""
+        return render(request,"magasin/matierePremiere/PaiementCredit.html",{"form":form,"message":msg})
+
+
+@require_GET
+def get_credit(request):
+    client_id = request.GET.get('client_id')
+    credit = client.objects.get(pk=client_id).credit
+    return JsonResponse({'credit': credit})
+
 #Journal de Vente Matiere Premiere 
 def afficher_JournalVenteMP(request):
-      if request.method == "GET":
-          query = request.GET.get('recherche')
-          sort_by = request.GET.get('sort_by', 'dateVente')
-          if query:
-              ventematierePremieres=VenteMatierePremiere.objects.filter(MPVendus__nomMP__icontains=query).order_by(sort_by)
-          else:
-              ventematierePremieres=VenteMatierePremiere.objects.all().order_by(sort_by)
+    if request.method == "GET":
+        MPVendus = request.GET.get('MPVendus')
+        dateVente = request.GET.get('dateVente')
+        client = request.GET.get('client')
+        QteVds = request.GET.get('QteVds')
+        prixUT = request.GET.get('prixUT')
+        sort_by = request.GET.get('sort_by', 'dateVente')
+        filter_query = {}
+        if MPVendus:
+            filter_query['MPVendus__nomMP__icontains']=MPVendus
+        if dateVente:
+            filter_query['dateVente__icontains']=dateVente
+        if client:
+            filter_query['client__nomCl__icontains']=client
+        if QteVds:
+            filter_query['QteVds__icontains']=QteVds
+        if prixUT:
+            filter_query['prixUT__icontains']=prixUT
+        ventematierePremieres=VenteMatierePremiere.objects.filter(**filter_query).order_by(sort_by)
+        sommeVente = ventematierePremieres.aggregate(total_montant=Sum('montantVente'))['total_montant']
+        sommeencais = ventematierePremieres.aggregate(total_encais=Sum('montantEncaisse'))['total_encais']
+        return render(request,'magasin/matierePremiere/JournalVenteMP.html',{"ventematierePremieres":ventematierePremieres,'sommeVente': sommeVente,'sommeencais':sommeencais})
 
-          return render(request,'magasin/matierePremiere/JournalVenteMP.html',{"ventematierePremieres":ventematierePremieres})
+def modifier_VentematierePremiere(request,pk):
+    mp=VenteMatierePremiere.objects.get(id=pk)
+    if request.method == "POST":
+        form=VentematierePremiereForm(request.POST,instance=mp)
+        if form.is_valid():
+            form.save()
+            return redirect("liste_VentematierePremieres")
+    else:
+        form=VentematierePremiereForm(instance=mp)
+        return render(request,"magasin/matierePremiere/EditVenteMatierePremiere.html",{"form":form})
+
+def supprimer_VentematierePremiere(request,pk):
+    mp=get_object_or_404(VenteMatierePremiere,id=pk)
+    if request.method == 'POST':
+            form=VentematierePremiereForm(request.POST)
+            matiere_vendu = mp.MPVendus 
+            if matiere_vendu:
+                matiere_vendu.Quantite = matiere_vendu.Quantite - int(mp.QteVds)
+                matiere_vendu.save()
+                mp.delete() 
+            return redirect('liste_VentematierePremieres')
+    return render(request,'magasin/matierePremiere/DelAchatMatierePremiere.html',{'matierePremiere':mp})
+
+# Afficher Etat Stock
+def afficher_etatStock(request):
+    if request.method == "GET":
+        matierepremier = request.GET.get('matierepremier')
+        typeTransaction = request.GET.get('typeTransaction')
+        prix = request.GET.get('prix')
+        QteTransaction = request.GET.get('QteTransaction')
+        montantTransaction = request.GET.get('montantTransaction')
+        filter_query = {}
+        if matierepremier:
+            filter_query['matierepremier__nomMP__icontains']=matierepremier
+        if typeTransaction:
+            filter_query['typeTransaction__icontains']=typeTransaction
+        if prix:
+            filter_query['prix__icontains']=prix
+        if QteTransaction:
+            filter_query['QteTransaction__icontains']=QteTransaction
+        if montantTransaction:
+            filter_query['montantTransaction__icontains']=montantTransaction
+        EtatStock =Stock.objects.filter(**filter_query)
+        sommestock = EtatStock.aggregate(total_sommestock=Sum(ExpressionWrapper(F('QteTransaction') * F('prix'),output_field=fields.DecimalField())))['total_sommestock'] or 0
+
+        return render(request, "magasin/matierePremiere/EtatStock.html", {'EtatStock': EtatStock, 'sommestock': sommestock})
+    return render(request, "magasin/matierePremiere/EtatStock.html", {'EtatStock': []})
+
 
 #Centre Section
 def section_centre(request,centre_id):
     centre_id=centre_id
     return render(request,"centre/modules.html",{'centre_id':centre_id})
- 
+
+#Activités du Centre
+def activites_centre(request,centre_id):
+    return render(request,"centre/activitesCentre.html",{'centre_id':centre_id})
+
+#Journal des Transferts
+def journal_transfert(request,centre_id):
+    if request.method == "GET":
+        sort_by = request.GET.get('sort_by','dateTransfert')
+        c=centre.objects.get(numeroC=centre_id)
+        query=request.GET.get('recherche')
+        queryDateMin=request.GET.get('dateMin')
+        queryDateMax=request.GET.get('dateMax')
+
+        if query:
+            transferts=TransfertMatierePremiere.objects.filter(MatieresTransferes__matieresAchetes__nomMP__icontains=query,centre=c).order_by(sort_by)
+        elif (queryDateMin and queryDateMax):
+            transferts=TransfertMatierePremiere.objects.filter(dateTransfert__range=[queryDateMin,queryDateMax],centre=c).order_by(sort_by)
+        else:
+            transferts=TransfertMatierePremiere.objects.filter(centre=c).order_by(sort_by)
+
+        sommeTransferts=0
+        for t in transferts:
+            sommeTransferts+=t.CoutTrf
+        return render(request,"centre/journal_transfert.html",{'transferts':transferts,'centre_id':centre_id,'somme_transferts':sommeTransferts})
+
+#Ventes des Produits
+def journal_vente(request,centre_id):
+    transferts=None
+    if request.method == "GET":
+        sort_by_vente = request.GET.get('sort_by','dateVente')
+        sort_by_transfert = request.GET.get('sort_by','dateTransfert')
+        c=centre.objects.get(numeroC=centre_id)
+        query=request.GET.get('recherche')
+        queryClient=request.GET.get('clientName')
+        queryDateMin=request.GET.get('dateMin')
+        queryDateMax=request.GET.get('dateMax')
+
+        if query:
+            ventes=venteProduit.objects.filter(produitVendu__nomP__icontains=query,centre=c).order_by(sort_by_vente)
+        elif queryClient:
+            ventes=venteProduit.objects.filter(client__nomCl__icontains=queryClient,centre=c).order_by(sort_by_vente)
+        elif (queryDateMin and queryDateMax):
+            ventes=venteProduit.objects.filter(dateVente__range=[queryDateMin,queryDateMax],centre=c).order_by(sort_by_vente)
+            transferts=TransfertMatierePremiere.objects.filter(dateTransfert__range=[queryDateMin,queryDateMax],centre=c).order_by(sort_by_transfert)
+        else:
+            ventes=venteProduit.objects.filter(centre=c).order_by(sort_by_vente)
+            transferts=TransfertMatierePremiere.objects.filter(centre=c).order_by(sort_by_transfert)
+
+        sommeTransferts=0
+        if transferts:
+            for t in transferts:
+                sommeTransferts+=t.CoutTrf
+
+        sommeVentes=0
+        for v in ventes:
+            v.montantTotal = v.qteVendu * v.prixVente
+            sommeVentes+=v.montantTotal
+            
+        benefice=sommeVentes-sommeTransferts
+        return render(request,"centre/journal_vente.html",{'ventes':ventes,'centre_id':centre_id,'somme_ventes':sommeVentes,'benefice':benefice})
+    return render(request,"centre/journal_vente.html",{'centre_id':centre_id})
+
+def ajouter_vente(request,centre_id):
+    if request.method == "POST":
+        form=venteProduitForm(request.POST)
+        msg_montant=""
+        if form.is_valid():
+            c=centre.objects.get(numeroC=centre_id)
+            form.instance.centre=c
+
+            id_prd=request.POST.get("produitVendu")
+            prd=produit.objects.get(id=id_prd)
+            qte=int(request.POST.get("qteVendu"))
+            if(prd.qte>=qte):
+                prix=float(request.POST.get("prixVente"))
+                montant_total=qte*prix
+                msg_montant="Montant Total ="+str(montant_total)
+
+                prd.qte-=qte
+                prd.save()
+
+                montant_verse=float(request.POST.get("montantVerse"))
+                if(montant_verse==0):
+                    form.instance.montantVerse=montant_total
+                else:
+                    id_cl=request.POST.get("client")
+                    cl=client.objects.get(id=id_cl)
+                    montant_restant=montant_total-montant_verse
+                    cl.credit=montant_restant
+                    cl.save()
+                
+                form.save()
+                form=venteProduitForm()
+                msg="Vente enregistrée avec succès"
+            else:
+                msg="Stock inssufisant, Quantité en stock= "+str(prd.qte)
+
+            return render(request,"centre/addVente.html",{'form':form,"message":msg,'centre_id':centre_id,'message_montant':msg_montant})
+    else:
+        form=venteProduitForm()
+        msg=""
+        return render(request,"centre/addVente.html",{"form":form,"message":msg,'centre_id':centre_id})
+    
+#Paiement Crédit Client
+def paiement_credit(request, centre_id):
+    cl = None
+    form = paiementCreditForm()
+    msg = ""
+
+    if request.method == "POST":
+        query = request.POST.get('search')
+        if query:
+            cl = client.objects.get(nomCl__icontains=query)
+        
+        form = paiementCreditForm(request.POST)
+        if form.is_valid():
+            if cl:
+                montant_paiement=request.POST.get("montantPaiement")
+                if montant_paiement:
+                    cl.credit-=float(montant_paiement)
+                    cl.save()
+                    form.instance.client = cl
+                    form.save()
+                    msg = "Paiement effectué avec succès"
+                    form = paiementCreditForm()
+            else:
+                msg="Client non trouvé"
+
+    return render(request, "centre/paiementCredit.html", {'form': form, "message": msg, 'centre_id': centre_id, 'cl': cl})
+
+#Module Employé
 def module_employe(request,centre_id):
     c=centre.objects.get(numeroC=centre_id)
     employes=employe.objects.filter(centre=c)
@@ -430,7 +696,6 @@ def supprimer_absence(request,pk):
         return redirect("absence",pk=a.employe.id)
     return render(request,'centre/deleteAbsence.html',{'absence':a})
 
-
 #Systeme Avance Salaire
 def afficher_avanceSalaire(request,pk):
     e=employe.objects.get(id=pk)
@@ -466,12 +731,65 @@ def supprimer_avanceSalaire(request,pk):
     return render(request,"centre/delteAvanceSalaire.html",{'avanceSalaire':avanceS})
 
 
+#Tableux de Bord Section
+def analyse_vente(request):
+    return render(request,'tableauxDeBord/optionsCentres.html')
+
+def afficher_tableaux(request,centre_id):
+    if request.method == "GET":
+        queryAnneeMin=request.GET.get('anneeMin')
+        queryAnneeMax=request.GET.get('anneeMax')
+        if (queryAnneeMin and queryAnneeMax):
+            anneeMin=int(queryAnneeMin)
+            anneeMax=int(queryAnneeMax)
+            annees=range(anneeMin,anneeMax+1)
+
+            if(centre_id != 0):
+                c=centre.objects.get(numeroC=centre_id)
+                ventes=venteProduit.objects.filter(dateVente__year__range=(anneeMin,anneeMax),centre=c)
+                ventesAnneePrecedante=venteProduit.objects.filter(dateVente__year__range=(anneeMin-(anneeMax-anneeMin+1),anneeMin-1),centre=c)
+                transferts=TransfertMatierePremiere.objects.filter(dateTransfert__year__range=(anneeMin,anneeMax),centre=c)
+                transfertsAnneePrecedante=TransfertMatierePremiere.objects.filter(dateTransfert__year__range=(anneeMin-(anneeMax-anneeMin+1),anneeMin-1),centre=c)
+                produits=produit.objects.filter(
+                    venteproduit__dateVente__year__range=(anneeMin,anneeMax),venteproduit__centre=c
+                ).annotate(qte_sold=Sum('venteproduit__qteVendu')
+                ).order_by('-qte_sold')[:10]
+                clients=client.objects.filter(
+                    venteproduit__dateVente__year__range=(anneeMin,anneeMax),venteproduit__centre=c
+                ).annotate(
+                    total_sale=Sum(ExpressionWrapper(F('venteproduit__qteVendu') * F('venteproduit__prixVente'),output_field=FloatField()))
+                ).order_by('-total_sale')[:10]
+            else:
+                ventes=venteProduit.objects.filter(dateVente__year__range=(anneeMin,anneeMax))
+                ventesAnneePrecedante=venteProduit.objects.filter(dateVente__year__range=(anneeMin-(anneeMax-anneeMin+1),anneeMin-1))
+                transferts=TransfertMatierePremiere.objects.filter(dateTransfert__year__range=(anneeMin,anneeMax))
+                transfertsAnneePrecedante=TransfertMatierePremiere.objects.filter(dateTransfert__year__range=(anneeMin-(anneeMax-anneeMin+1),anneeMin-1))
+                produits=produit.objects.filter(
+                    venteproduit__dateVente__year__range=(anneeMin,anneeMax)
+                ).annotate(qte_sold=Sum('venteproduit__qteVendu')
+                ).order_by('-qte_sold')[:10]
+                clients=client.objects.filter(
+                    venteproduit__dateVente__year__range=(anneeMin,anneeMax)
+                ).annotate(
+                    total_sale=Sum(ExpressionWrapper(F('venteproduit__qteVendu') * F('venteproduit__prixVente'),output_field=FloatField()))
+                ).order_by('-total_sale')[:10]
 
 
+            totalVentes=ventes.aggregate(total_ventes=Sum(ExpressionWrapper(F('qteVendu') * F('prixVente'),output_field=FloatField())))['total_ventes'] or 0
+            totalVentesAnneePrecedante=ventesAnneePrecedante.aggregate(total_ventes_annee_precedante=Sum(ExpressionWrapper(F('qteVendu') * F('prixVente'),output_field=FloatField())))['total_ventes_annee_precedante'] or 0
+            if totalVentesAnneePrecedante > 0:
+                tauxVentes=((totalVentes-totalVentesAnneePrecedante)/totalVentesAnneePrecedante)*100
+            else:
+                tauxVentes=100
 
-# def achatMatieres(request):
-#     return render(request,"magasin/AchatMatieres.html")
+            totalTransferts=transferts.aggregate(total_transferts=Sum('CoutTrf'))['total_transferts'] or 0
+            totalTransfertsAnneePrecedante=transfertsAnneePrecedante.aggregate(total_transferts_annee_precedante=Sum('CoutTrf'))['total_transferts_annee_precedante'] or 0
 
-# def getFournisseurs(request):
-#     fournisseurs=fournisseur.objects.all()
-#     return render(request,"AchatMatieres.html",{'fournisseurs':fournisseurs})
+            totalBenefice=totalVentes-totalTransferts
+            totalBeneficeAnneePrecedante=totalVentesAnneePrecedante-totalTransfertsAnneePrecedante
+            if totalBeneficeAnneePrecedante > 0:
+                tauxBenefice=((totalBenefice-totalBeneficeAnneePrecedante)/totalBeneficeAnneePrecedante)*100
+            else:
+                tauxBenefice=100
+            return render(request,'tableauxDeBord/tableaux.html',{'centre_id':centre_id,'annees':annees,'taux_ventes':tauxVentes,'taux_benefice':tauxBenefice,'ventes':ventes,'produits':produits,'clients':clients})
+    return render(request,'tableauxDeBord/tableaux.html',{'centre_id':centre_id})

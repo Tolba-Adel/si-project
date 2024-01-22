@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal Achat Matiere Premiere</title>
+</head>
+<body>
+    <h1>Journal achat matiere Premières</h1>
+    <form method="GET" action="{% url 'liste_AchatmatierePremieres' %}" class="form-inline">
+      <div class="form-group">
+          <label for="dateAchat">Entrez la dateAchat:</label>
+          <input type="text" name="dateAchat" id="filter-dateAchat" class="form-control" />
+      </div> 
+      <div class="form-group">
+          <label for="fournisseur">Entrez le nom fournisseur:</label>
+          <input type="text" name="fournisseur" id="filter-fournisseur" class="form-control" />
+      </div> 
+      <div class="form-group">
+          <label for="MP">Entrez le nom de la matière première:</label>
+          <input type="text" name="MP" id="filter-MP" class="form-control" />
+      </div> 
+      <div class="form-group">
+          <label for="QteAchat">Entrez la Quantité:</label>
+          <input type="text" name="QteAchat" id="filter-QteAchat" class="form-control" />
+      </div>
+      <div class="form-group">
+          <label for="prixAchat">Entrez le prix:</label>
+          <input type="text" name="prixAchat" id="filter-prixAchat" class="form-control" />
+      </div>
+      <button type="submit" class="btn btn-outline-info">Filter</button>
+  </form>
+    <br />
+
+    <form method="GET" action="{% url 'liste_AchatmatierePremieres' %}">
+      <label for="sort_by">Trier par:</label>
+      <select name="sort_by" id="sort_by">
+          <option value="dateAchat">Date Achat</option>
+          <option value="fournisseur">Fournisseur</option>
+          <option value="matieresAchetes">Matiere Premiere</option>
+          <option value="QteAchat">Quantite achetée</option>
+          <option value="montantTotal">Montant Total</option>
+          <option value="montantverse">Montant versé</option>
+      </select>
+      <button type="submit">Trier</button>
+  </form>
+
+    {% if achatmatierePremieres %}
+    <table border="1px">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Date Achat</th>
+          <th>Fournisseur</th>
+          <th>Matiere Premiere</th>
+          <th>Quantite achetée</th>
+          <th>prix Achat</th>
+          <th>Montant Total</th>
+          <th>Montant versé</th>
+        </tr>
+      </thead>
+      
+      {% for mpA in achatmatierePremieres %}
+      <tbody>
+        <tr>
+          <td>{{mpA.id}}</td>
+          <td>{{mpA.dateAchat}}</td>
+          <td>{{mpA.fournisseur}}</td>
+          <td>{{mpA.matieresAchetes}}</td>
+          <td>{{mpA.QteAchat}}</td>
+          <td>{{mpA.prixAchat}}</td>
+          <td>{{mpA.montantTotal}}</td>
+          <td>{{mpA.montantverse}}</td>
+          <td>
+            <a href="{% url 'editAchatMP' mpA.id %}">Modifier</a>
+          </td>
+          <td>
+            <a href="{% url 'deleteAchatMP' mpA.id %}">Supprimer</a>
+          </td>
+        </tr>
+        {% endfor %}
+
+      </tbody>
+    </table>
+    <p>Montant Total Achat ={{sommeachat}}</p></p>
+    {% else %}
+    <p>Aucune Matière Première a afficher</p>
+    {% endif %}    
+    <a href="{% url 'ReglerAchatMP' %}"><button>Reglements Fournisseurs</button></a>
+    <br />
+    <br />
+
+    <a href="magasin">
+      <button>retourner</button>
+    </a>
+</body>
+</html>

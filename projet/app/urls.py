@@ -4,7 +4,6 @@ from . import views
 urlpatterns = [
     #Home Page
     path('', views.index, name='index'),
-
     path('magasin',views.magasin, name='magasin'),
     path('centres',views.centres, name='centres'),
     path('tableauxDeBord',views.tableauxDeBord, name='TableauxDeBord'),
@@ -26,13 +25,36 @@ urlpatterns = [
     path('employe/ajouter',views.ajouter_employe, name="addE"),
     path('employe/edit/<int:pk>',views.modifier_employe, name="editE"),
     path('employe/delete/<int:pk>',views.supprimer_employe, name="deleteE"),
-    #Centre
-    path('centre',views.afficher_centres,name='liste_centres'),
     #Produit
     path('produit',views.afficher_produits,name='liste_produits'),
     path('produit/ajouter',views.ajouter_produit, name="addPrd"),
     path('produit/edit/<int:pk>',views.modifier_produit, name="editPrd"),
     path('produit/delete/<int:pk>',views.supprimer_produit, name="deletePrd"),
+    #Centre
+    path('centre',views.afficher_centres,name='liste_centres'),
+    #Matiere Premiere
+    path('matierePremiere',views.afficher_matierePremieres,name='liste_matierePremieres'),
+    path('matierePremiere/edit/<int:pk>/',views.modifier_matierePremiere, name="editMP"),
+    path('matierePremiere/delete/<int:pk>',views.supprimer_matierePremiere, name="deleteMP"),
+    #Achat Matiere Premiere
+    path('AchatMatierePremiere',views.Achat_matierePremiere, name="addMP"),
+    path('JournalAchatMatierePremiere',views.afficher_JournalAchatMP,name="liste_AchatmatierePremieres"),
+    path('JournalAchatMatierePremiere/edit/<int:pk>/',views.modifier_AchatmatierePremiere, name="editAchatMP"),
+    path('JournalAchatMatierePremiere/delete/<int:pk>',views.supprimer_AchatmatierePremiere, name="deleteAchatMP"),
+    path('ReglementFournisseur',views.ReglementAchat_matierePremiere,name="ReglerAchatMP"),
+    path('get_solde/', views.get_solde, name='get_solde'),
+    #Transfert Matiere Premiere
+    path('TransfertMatierePremiere',views.Transfert_matierePremiere, name="TransMP"),
+    path('JournalTransfertMatierePremiere',views.afficher_JournalTransfertMP, name="liste_TransfertmatierePremieres"),
+    #Vente Matiere Premiere
+    path('VenteMatierePremiere',views.Vente_MatierePremiere, name="VenteMP"),
+    path('JournalVenteMatierePremiere',views.afficher_JournalVenteMP, name="liste_VentematierePremieres"),
+    path('JournalVenteMatierePremiere/edit/<int:pk>/',views.modifier_VentematierePremiere, name="editVenteMP"),
+    path('JournalVenteMatierePremiere/delete/<int:pk>',views.supprimer_VentematierePremiere, name="deleteVenteMP"),
+    path('PaiementCredit',views.PaiementCredit_matierePremiere,name="PaiementCredMP"),
+    path('get_credit/', views.get_credit, name='get_credit'),
+    #Etat De Stock
+    path('EtatDeStock',views.afficher_etatStock, name="EtatSock"),
 
 
     #Centre Section
@@ -65,5 +87,4 @@ urlpatterns = [
     #Tableux de Bord Section
     path('analyseVente',views.analyse_vente,name="analyse_vente"),
     path('tableauxDeBord/<int:centre_id>',views.afficher_tableaux,name="tableaux_de_bord"),
-
 ]

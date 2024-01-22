@@ -32,7 +32,7 @@
           <td>{{prd.id}}</td>
           <td>{{prd.nomP}}</td>
           <td>{{prd.qte}}</td>
-          <td>
+          <td
             <a href="{% url 'editPrd' prd.id %}">Modifier</a>
           </td>
           <td>
@@ -45,13 +45,12 @@
     {% else %}
     <p>Aucun Produit a afficher</p>
     {% endif %}
-
     <a href="produit/ajouter">
       <button>Ajouter un Produit</button>
     </a>
     <br />
     <br />
-
+    
     <a href="magasin">
       <button>retourner</button>
     </a>

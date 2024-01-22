@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Matière Premières</title>
+  </head>
+  <body>
+    <h1>Liste de Matière Premières</h1>
+
+    <form method="GET">
+      <label for="search">Entrez le nom de la matière première:</label>
+      <input type="text" name="recherche" id="search" />
+      <button type="submit">rechercher</button>
+    </form>
+    <br />
+
+    {% if matierePremieres %}
+    <table border="1px">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Nom</th>
+          <th>Type</th>
+          <th>Quantite</th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      {% for mp in matierePremieres %}
+      <tbody>
+        <tr>
+          <td>{{mp.id}}</td>
+          <td>{{mp.nomMP}}</td>
+          <td>{{mp.TypeMP}}</td>
+          <td>{{mp.Quantite}}</td>
+          <td>
+            <a href="{% url 'editMP' mp.id %}">Modifier</a>
+          </td>
+          <td>
+            <a href="{% url 'deleteMP' mp.id %}">Supprimer</a>
+          </td>
+        </tr>
+      </tbody>
+      {% endfor %}
+    </table>
+    {% else %}
+    <p>Aucune Matière Première a afficher</p>
+    {% endif %}
+
+    <a href="magasin">
+      <button>retourner</button>
+    </a>
+  </body>
+</html>

@@ -39,8 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'calculation',
     'django_select2',
-    'app',
-    
+    'app'
 ]
 
 MIDDLEWARE = [

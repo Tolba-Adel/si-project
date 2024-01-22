@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+  {% load static %}
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <title>Clients</title>
   </head>
   <body>
@@ -11,12 +13,12 @@
     <form method="GET">
       <label for="search">Entrez le nom du client:</label>
       <input type="text" name="recherche" id="search" />
-      <button type="submit">rechercher</button>
+      <button type="submit" class="btn btn-info">rechercher</button>
     </form>
     <br />
 
     {% if clients %}
-    <table border="1px">
+    <table border="1px" class="table table-dark table-hover table-bordered">
       <thead>
         <tr>
           <th></th>
@@ -30,18 +32,18 @@
         </tr>
       </thead>
       {% for cl in clients %}
-      <tbody>
+      <tbody class="table-group-divider">
         <tr>
-          <td>{{cl.id}}</td>
-          <td>{{cl.nomCl}}</td>
-          <td>{{cl.prenomCl}}</td>
-          <td>{{cl.adresseCl}}</td>
-          <td>{{cl.telephoneCl}}</td>
-          <td>{{cl.credit}}</td>
-          <td>
+          <td class="table-active">{{cl.id}}</td>
+          <td class="table-active">{{cl.nomCl}}</td>
+          <td class="table-active">{{cl.prenomCl}}</td>
+          <td class="table-active">{{cl.adresseCl}}</td>
+          <td class="table-active">{{cl.telephoneCl}}</td>
+          <td class="table-active">{{cl.credit}}</td>
+          <td class="table-active">
             <a href="{% url 'editCl' cl.id %}">Modifier</a>
           </td>
-          <td>
+          <td class="table-active">
             <a href="{% url 'deleteCl' cl.id %}">Supprimer</a>
           </td>
         </tr>
@@ -53,13 +55,13 @@
     {% endif %}
 
     <a href="client/ajouter">
-      <button>Ajouter un Client</button>
+      <button class="btn btn-warning">Ajouter un Client</button>
     </a>
     <br />
     <br />
 
     <a href="magasin">
-      <button>retourner</button>
+      <button class="btn btn-secondary">retourner</button>
     </a>
   </body>
 </html>

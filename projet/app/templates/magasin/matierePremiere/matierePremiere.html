@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+  {% load static %}
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <title>Matière Premières</title>
   </head>
   <body>
@@ -11,12 +13,12 @@
     <form method="GET">
       <label for="search">Entrez le nom de la matière première:</label>
       <input type="text" name="recherche" id="search" />
-      <button type="submit">rechercher</button>
+      <button type="submit" class="btn btn-info">rechercher</button>
     </form>
     <br />
 
     {% if matierePremieres %}
-    <table border="1px">
+    <table border="1px" class="table table-dark table-hover table-bordered">
       <thead>
         <tr>
           <th></th>
@@ -25,20 +27,19 @@
           <th>Quantite</th>
           <th></th>
           <th></th>
-          <th></th>
         </tr>
       </thead>
       {% for mp in matierePremieres %}
-      <tbody>
+      <tbody class="table-group-divider">
         <tr>
-          <td>{{mp.id}}</td>
-          <td>{{mp.nomMP}}</td>
-          <td>{{mp.TypeMP}}</td>
-          <td>{{mp.Quantite}}</td>
-          <td>
+          <td class="table-active">{{mp.id}}</td>
+          <td class="table-active">{{mp.nomMP}}</td>
+          <td class="table-active">{{mp.TypeMP}}</td>
+          <td class="table-active">{{mp.Quantite}}</td>
+          <td class="table-active">
             <a href="{% url 'editMP' mp.id %}">Modifier</a>
           </td>
-          <td>
+          <td class="table-active">
             <a href="{% url 'deleteMP' mp.id %}">Supprimer</a>
           </td>
         </tr>
@@ -50,7 +51,7 @@
     {% endif %}
 
     <a href="magasin">
-      <button>retourner</button>
+      <button class="btn btn-secondary">retourner</button>
     </a>
   </body>
 </html>

@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+  {% load static %}
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <title>Produits</title>
   </head>
   <body>
@@ -11,12 +13,12 @@
     <form method="GET">
       <label for="search">Entrez le nom du produit:</label>
       <input type="text" name="recherche" id="search" />
-      <button type="submit">rechercher</button>
+      <button type="submit" class="btn btn-info">rechercher</button>
     </form>
     <br />
 
     {% if produits %}
-    <table border="1px">
+    <table border="1px" class="table table-dark table-hover table-bordered">
       <thead>
         <tr>
           <th></th>
@@ -27,15 +29,15 @@
         </tr>
       </thead>
       {% for prd in produits %}
-      <tbody>
+      <tbody class="table-group-divider">
         <tr>
-          <td>{{prd.id}}</td>
-          <td>{{prd.nomP}}</td>
-          <td>{{prd.qte}}</td>
-          <td
+          <td class="table-active">{{prd.id}}</td>
+          <td class="table-active">{{prd.nomP}}</td>
+          <td class="table-active">{{prd.qte}}</td>
+          <td class="table-active">
             <a href="{% url 'editPrd' prd.id %}">Modifier</a>
           </td>
-          <td>
+          <td class="table-active">
             <a href="{% url 'deletePrd' prd.id %}">Supprimer</a>
           </td>
         </tr>
@@ -46,13 +48,13 @@
     <p>Aucun Produit a afficher</p>
     {% endif %}
     <a href="produit/ajouter">
-      <button>Ajouter un Produit</button>
+      <button class="btn btn-warning">Ajouter un Produit</button>
     </a>
     <br />
     <br />
     
     <a href="magasin">
-      <button>retourner</button>
+      <button class="btn btn-secondary">retourner</button>
     </a>
   </body>
 </html>

@@ -1,9 +1,12 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
+
 <h1>Liste des Transferts reçu par Centre {{centre_id}}</h1>
 
 <form method="GET">
   <label for="search">Entrez le nom de la Matière Première:</label>
   <input type="text" name="recherche" id="search" />
-  <button type="submit">rechercher</button>
+  <button type="submit" class="btn btn-info">rechercher</button>
 </form>
 <br />
 
@@ -12,12 +15,12 @@
   <input type="date" name="dateMin" id="search2" />
   <label for="search3">Entrez Date Max:</label>
   <input type="date" name="dateMax" id="search3" />
-  <button type="submit">rechercher</button>
+  <button type="submit" class="btn btn-info">rechercher</button>
 </form>
 <br />
 
 {% if transferts %}
-<table border="1px">
+<table border="1px" class="table table-dark table-hover table-bordered">
   <thead>
     <tr>
       <th></th>
@@ -29,14 +32,14 @@
     </tr>
   </thead>
   {% for t in transferts %}
-  <tbody>
+  <tbody class="table-group-divider">
     <tr>
-      <td>{{t.id}}</td>
-      <td>{{t.dateTransfert}}</td>
-      <td>{{t.MatieresTransferes}}</td>
-      <td>{{t.QteTrf}}</td>
-      <td>{{t.PrixUTA}}</td>
-      <td>{{t.CoutTrf}}</td>
+      <td class="table-active">{{t.id}}</td>
+      <td class="table-active">{{t.dateTransfert}}</td>
+      <td class="table-active">{{t.MatieresTransferes}}</td>
+      <td class="table-active">{{t.QteTrf}}</td>
+      <td class="table-active">{{t.PrixUTA}}</td>
+      <td class="table-active">{{t.CoutTrf}}</td>
     </tr>
   </tbody>
   {% endfor %}
@@ -49,5 +52,5 @@
 <br />
 
 <a href="{% url 'activites_centre' centre_id=centre_id %}">
-  <button>retourner</button>
+  <button class="btn btn-secondary">retourner</button>
 </a>

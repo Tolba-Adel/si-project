@@ -78,11 +78,12 @@ class paiementCredForm(forms.ModelForm):
 
 class matierePremiereForm(forms.ModelForm):
     class Meta:
-        model=produit
+        model=matierePremiere
         fields="__all__"
-        lables={
-            'nomP':'Nom produit',
-            'qte':'Quantité',
+        labels = {
+            'nomMP': 'Nom',
+            'prix_achatMP': "Prix d'achat",
+            'prix_venteMP': "Prix de vente"
         }
 
 class fournisseurWidget(s2forms.ModelSelect2Widget):

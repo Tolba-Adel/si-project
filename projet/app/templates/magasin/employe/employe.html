@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+  {% load static %}
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <title>Employes</title>
   </head>
   <body>
@@ -11,12 +13,12 @@
     <form method="GET">
       <label for="search">Entrez le nom d'employe:</label>
       <input type="text" name="recherche" id="search" />
-      <button type="submit">rechercher</button>
+      <button type="submit" class="btn btn-info">rechercher</button>
     </form>
     <br />
 
     {% if employes %}
-    <table border="1px">
+    <table border="1px" class="table table-dark table-hover table-bordered">
       <thead>
         <tr>
           <th></th>
@@ -31,19 +33,19 @@
         </tr>
       </thead>
       {% for e in employes %}
-      <tbody>
+      <tbody class="table-group-divider">
         <tr>
-          <td>{{e.id}}</td>
-          <td>{{e.nomE}}</td>
-          <td>{{e.prenomE}}</td>
-          <td>{{e.adresseE}}</td>
-          <td>{{e.telephoneE}}</td>
-          <td>{{e.salaire_jour}}</td>
-          <td>{{e.centre}}</td>
-          <td>
+          <td class="table-active">{{e.id}}</td>
+          <td class="table-active">{{e.nomE}}</td>
+          <td class="table-active">{{e.prenomE}}</td>
+          <td class="table-active">{{e.adresseE}}</td>
+          <td class="table-active">{{e.telephoneE}}</td>
+          <td class="table-active">{{e.salaire_jour}}</td>
+          <td class="table-active">{{e.centre}}</td>
+          <td class="table-active">
             <a href="{% url 'editE' e.id %}">Modifier</a>
           </td>
-          <td>
+          <td class="table-active">
             <a href="{% url 'deleteE' e.id %}">Supprimer</a>
           </td>
         </tr>
@@ -55,13 +57,13 @@
     {% endif %}
 
     <a href="employe/ajouter">
-      <button>Ajouter un Employe</button>
+      <button class="btn btn-warning">Ajouter un Employe</button>
     </a>
     <br />
     <br />
 
     <a href="magasin">
-      <button>retourner</button>
+      <button class="btn btn-secondary">retourner</button>
     </a>
   </body>
 </html>

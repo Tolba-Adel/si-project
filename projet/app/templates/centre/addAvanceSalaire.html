@@ -1,3 +1,5 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
 <form method="POST">
   {% csrf_token %}
   <label for="montant">Montant</label>
@@ -6,10 +8,10 @@
   <label for="dateAvanceSalaire">Date Demande</label>
   <input type="date" name="dateAvanceSalaire" id="dateAvanceSalaire" />
   <br />
-  <input type="submit" value="Ajouter" />
+  <input type="submit" class="btn btn-success" value="Ajouter" />
 </form>
 <p>{{message}}</p>
 
 <a href="{% url 'avanceSalaire' pk=employe_id %}">
-  <button>Liste Demandes</button>
+  <button class="btn btn-outline-warning btn-dark">Liste Demandes</button>
 </a>

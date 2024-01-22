@@ -1,3 +1,5 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
 <form method="POST">
   {% csrf_token %}
   <label for="montant">Montant</label>
@@ -19,9 +21,9 @@
   />
   <br />
   <a href=" {% url 'avanceSalaire' pk=avanceSalaire.employe.id %}" id="annuler">
-    <button>Annuler</button>
+    <button class="btn btn-secondary">Annuler</button>
   </a>
-  <input type="submit" value="Modifier" />
+  <input type="submit" class="btn btn-primary" value="Modifier" />
 </form>
 
 <script>

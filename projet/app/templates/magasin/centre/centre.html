@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+  {% load static %}
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <title>Centres</title>
   </head>
   <body>
@@ -11,29 +13,29 @@
     <form method="GET">
       <label for="search">Entrez le nom du centre:</label>
       <input type="text" name="recherche" id="search" />
-      <button type="submit">rechercher</button>
+      <button type="submit" class="btn btn-info">rechercher</button>
     </form>
     <br />
 
     {% if centres %}
-    <table border="1px">
-      <thead>
-        <tr>
-          <th></th>
-          <th>Nom</th>
-          <th>Numero</th>
-        </tr>
-      </thead>
-      {% for c in centres %}
-      <tbody>
-        <tr>
-          <td>{{c.id}}</td>
-          <td>{{c.nomC}}</td>
-          <td>{{c.numeroC}}</td>
-        </tr>
-      </tbody>
-      {% endfor %}
-    </table>
+      <table border="1px" class="table table-dark table-hover table-bordered">
+        <thead>
+          <tr>
+            <th ></th>
+            <th >Nom</th>
+            <th >Numero</th>
+          </tr>
+        </thead>
+        {% for c in centres %}
+        <tbody class="table-group-divider">
+          <tr>
+            <td class="table-active">{{c.id}}</td>
+            <td class="table-active">{{c.nomC}}</td>
+            <td class="table-active">{{c.numeroC}}</td>
+          </tr>
+        </tbody>
+        {% endfor %}
+      </table>
     {% else %}
     <p>Aucun Centre a afficher</p>
     {% endif %}
@@ -42,7 +44,7 @@
     <br />
 
     <a href="magasin">
-      <button>retourner</button>
+      <button class="btn btn-secondary">retourner</button>
     </a>
   </body>
 </html>

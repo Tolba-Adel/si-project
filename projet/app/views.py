@@ -198,24 +198,21 @@ def afficher_matierePremieres(request):
     if request.method == "GET":
         query = request.GET.get('recherche')
         if query:
-            produits=produit.objects.filter(nomP__icontains=query)
+            matierePremieres=matierePremiere.objects.filter(nomMP__icontains=query)
         else:
             matierePremieres=matierePremiere.objects.all()
-        return render(request,"magasin/matierePremiere/matierePremiere.html",{'matierePremieres':matierePremieres})
-    
+        return render(request,"magasin/matierePremiere/matierePremiere.html",{'matierePremieres':matierePremieres})    
+
 def modifier_matierePremiere(request,pk):
     mp=matierePremiere.objects.get(id=pk)
     if request.method == "POST":
-        form=produitForm(request.POST)
+        form=matierePremiereForm(request.POST,instance=mp)
         if form.is_valid():
             form.save()
-            form=produitForm()
-            msg="Produit ajoutée avec succès"
-            return render(request,"magasin/produit/addProduit.html",{'form':form,"message":msg})
+            return redirect("liste_matierePremieres")
     else:
-        form=produitForm()
-        msg=""
-    return render(request,"magasin/produit/addProduit.html",{"form":form,"message":msg})
+        form=matierePremiereForm(instance=mp)
+        return render(request,"magasin/matierePremiere/editMatierePremiere.html",{"form":form})
 
 def supprimer_matierePremiere(request,pk):
     mp=get_object_or_404(matierePremiere,id=pk)

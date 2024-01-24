@@ -10,7 +10,7 @@ class client(models.Model):
     prenomCl=models.CharField(max_length=50)
     adresseCl=models.CharField(max_length=50)
     telephoneCl=models.CharField(max_length=10)
-    credit=models.FloatField(max_length=10)
+    credit=models.FloatField(max_length=10,default=0)
     def __str__(self):
         return f"{self.nomCl} {self.prenomCl}"
 
@@ -20,7 +20,7 @@ class fournisseur(models.Model):
     prenomF=models.CharField(max_length=50)
     adresseF=models.CharField(max_length=50)
     telephoneF=models.CharField(max_length=10)
-    solde=models.FloatField(max_length=10)
+    solde=models.FloatField(max_length=10,default=0)
     def __str__(self):
         return f"{self.nomF} {self.prenomF}"
 
@@ -91,8 +91,7 @@ class matierePremiere(models.Model):
     # codeM = models.AutoField(primary_key=True)
     nomMP = models.CharField(max_length=50)
     TypeMP = models.CharField(max_length=50)
-    Quantite = models.IntegerField()
-    Fournisseur = models.ForeignKey(fournisseur,on_delete=models.CASCADE,default=1)
+    Quantite = models.PositiveIntegerField(default=0)
     def __str__(self):
         return self.nomMP
 
@@ -107,7 +106,7 @@ class achat(models.Model):
     montantverse = models.FloatField(default=0)
     montantRestant = models.FloatField(default=0)
     def __str__(self):
-        return f"{self.matieresAchetes}"
+        return f"{self.matieresAchetes} {self. prixAchat}"
 
 class ReglementFournisseur(models.Model):
     dateReg = models.DateTimeField(default=datetime.now)
@@ -121,7 +120,7 @@ class TransfertMatierePremiere(models.Model):
     # codeTransfert=models.AutoField(primary_key=True)
     dateTransfert = models.DateTimeField(default=datetime.now)
     centre = models.ForeignKey(centre, on_delete=models.CASCADE)
-    MatieresTransferes = models.ForeignKey(matierePremiere, on_delete=models.CASCADE)
+    MatieresTransferes = models.ForeignKey(achat, on_delete=models.CASCADE)
     QteTrf = models.IntegerField()
     PrixUTA = models.FloatField(default=0)
     CoutTrf = models.IntegerField(default=0) 

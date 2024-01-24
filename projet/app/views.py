@@ -4,6 +4,7 @@ from django.shortcuts import render,redirect,get_object_or_404
 from django.db.models import Sum,ExpressionWrapper,F,FloatField,fields
 from django.views.decorators.http import require_GET
 from django.http import JsonResponse
+from django.utils import timezone
 
 #Home Page
 def index(request):
@@ -221,6 +222,18 @@ def supprimer_matierePremiere(request,pk):
         return redirect('liste_matierePremieres')
     return render(request,'magasin/matierePremiere/confirmDelete.html',{'matierePremiere':mp})
 
+def ajouter_matierePremiere(request):
+    if request.method == "POST":
+        form=matierePremiereForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form=matierePremiereForm()
+            msg="Matiere Premiere ajoutée avec succès"
+            return render(request,"magasin/matierePremiere/addMP.html",{'form':form,"message":msg})
+    else:
+        form=matierePremiereForm()
+        msg=""
+        return render(request,"magasin/matierePremiere/addMP.html",{'form':form,"message":msg})
 #Achat matiere premiere
 def Achat_matierePremiere(request):
     if request.method == "POST":
@@ -321,7 +334,18 @@ def supprimer_AchatmatierePremiere(request,pk):
             if matiere_achetee:
                 matiere_achetee.Quantite = matiere_achetee.Quantite - int(mp.QteAchat)
                 matiere_achetee.save()
+                Stock.objects.filter(
+                matierepremier=matiere_achetee,
+                typeTransaction="achat",
+                prix=float(mp.prixAchat),
+                QteTransaction=int(mp.QteAchat),
+                montantTransaction=float(mp.montantTotal),).delete()
                 mp.delete() 
+                EtatStock = Stock.objects.filter(matierepremier=matiere_achetee)
+                sommestock = EtatStock.aggregate(
+                total_sommestock=Sum(ExpressionWrapper(F('QteTransaction') * F('prix'), output_field=fields.DecimalField()))
+            )['total_sommestock'] or 0
+
             return redirect('liste_AchatmatierePremieres')
     return render(request,'magasin/matierePremiere/DelAchatMatierePremiere.html',{'matierePremiere':mp, 'sommeachat': sommeachat})
 
@@ -329,13 +353,12 @@ def supprimer_AchatmatierePremiere(request,pk):
 def Transfert_matierePremiere(request):
     if request.method == "POST":
         form=TransfertmatierePremiereForm(request.POST)
-        print(form['MatieresTransferes'].value()[0])
         if form.is_valid():
             editForm = form.save(commit = False)
             editForm.PrixUTA = achat.objects.get(pk=form['MatieresTransferes'].value()[0]).prixAchat
             editForm.CoutTrf = achat.objects.get(pk=form['MatieresTransferes'].value()[0]).prixAchat * int(form['QteTrf'].value())           
             editForm.save()
-            selectedMP = matierePremiere.objects.get(pk=form['MatieresTransferes'].value()[0])
+            selectedMP = matierePremiere.objects.get(pk=achat.objects.get(pk=form['MatieresTransferes'].value()[0]).matieresAchetes.id)
             selectedMP.Quantite = selectedMP.Quantite - int(form['QteTrf'].value())
             selectedMP.save()
             stock_instance = Stock(
@@ -477,7 +500,27 @@ def supprimer_VentematierePremiere(request,pk):
             if matiere_vendu:
                 matiere_vendu.Quantite = matiere_vendu.Quantite - int(mp.QteVds)
                 matiere_vendu.save()
-                mp.delete() 
+                total_vente = Stock.objects.filter(
+                matierepremier=matiere_vendu,
+                typeTransaction="Vente",
+                prix=float(mp.prixUT),
+                QteTransaction=int(mp.QteVds),
+                montantTransaction=float(mp.montantVente),
+            ).aggregate(
+                total_vente=Sum(ExpressionWrapper(F('QteTransaction') * F('prix'), output_field=fields.DecimalField()))
+            )['total_vente'] or 0
+            Stock.objects.filter(
+                matierepremier=matiere_vendu,
+                typeTransaction="Vente",
+                prix=float(mp.prixUT),
+                QteTransaction=int(mp.QteVds),
+                montantTransaction=float(mp.montantVente),
+            ).delete()
+            EtatStock = Stock.objects.filter(matierepremier=matiere_vendu)
+            sommestock = EtatStock.aggregate(
+                total_sommestock=Sum(ExpressionWrapper(F('QteTransaction') * F('prix'), output_field=fields.DecimalField()))
+            )['total_sommestock'] or 0
+            mp.delete()
             return redirect('liste_VentematierePremieres')
     return render(request,'magasin/matierePremiere/DelAchatMatierePremiere.html',{'matierePremiere':mp})
 
@@ -491,7 +534,7 @@ def afficher_etatStock(request):
         montantTransaction = request.GET.get('montantTransaction')
         filter_query = {}
         if matierepremier:
-            filter_query['matierepremier__nomMP__icontains']=matierepremier
+            filter_query['matierepremier__icontains']=matierepremier
         if typeTransaction:
             filter_query['typeTransaction__icontains']=typeTransaction
         if prix:
@@ -501,11 +544,38 @@ def afficher_etatStock(request):
         if montantTransaction:
             filter_query['montantTransaction__icontains']=montantTransaction
         EtatStock =Stock.objects.filter(**filter_query)
-        sommestock = EtatStock.aggregate(total_sommestock=Sum(ExpressionWrapper(F('QteTransaction') * F('prix'),output_field=fields.DecimalField())))['total_sommestock'] or 0
+        total_achat = 0
+        total_vente = 0
+        total_transfert = 0
+        quantite_achat = 0
+        quantite_vente = 0
+        quantite_transfert = 0
 
-        return render(request, "magasin/matierePremiere/EtatStock.html", {'EtatStock': EtatStock, 'sommestock': sommestock})
+        for stock_entry in EtatStock:
+            if stock_entry.typeTransaction == 'achat':
+                total_achat += stock_entry.QteTransaction * stock_entry.prix
+                quantite_achat += stock_entry.QteTransaction
+            elif stock_entry.typeTransaction == 'Vente':
+                total_vente += stock_entry.QteTransaction * stock_entry.prix
+                quantite_vente += stock_entry.QteTransaction
+            elif stock_entry.typeTransaction == 'Transfert':
+                total_transfert += stock_entry.QteTransaction * stock_entry.prix
+                quantite_transfert += stock_entry.QteTransaction
+        sortie_stock = quantite_vente + quantite_transfert       
+        total_stock = total_vente - total_achat
+        QteStock = quantite_achat - sortie_stock
+        return render(request, "magasin/matierePremiere/EtatStock.html", {
+            'EtatStock': EtatStock,
+            'total_achat': total_achat,
+            'total_vente': total_vente,
+            'total_transfert': total_transfert,
+            'quantite_achat': quantite_achat,
+            'quantite_vente': quantite_vente,
+            'quantite_transfert': quantite_transfert,
+            'total_stock': total_stock,
+            'QteStock': QteStock
+        })
     return render(request, "magasin/matierePremiere/EtatStock.html", {'EtatStock': []})
-
 
 #Centre Section
 def section_centre(request,centre_id):
@@ -793,3 +863,35 @@ def afficher_tableaux(request,centre_id):
                 tauxBenefice=100
             return render(request,'tableauxDeBord/tableaux.html',{'centre_id':centre_id,'annees':annees,'taux_ventes':tauxVentes,'taux_benefice':tauxBenefice,'ventes':ventes,'produits':produits,'clients':clients})
     return render(request,'tableauxDeBord/tableaux.html',{'centre_id':centre_id})
+
+
+def afficher_tableaux_achat(request):
+    if request.method == "GET":
+        queryAnneeMin = request.GET.get('anneeMin')
+        queryAnneeMax = request.GET.get('anneeMax')
+
+        if queryAnneeMin and queryAnneeMax:
+            anneeMin = int(queryAnneeMin)
+            anneeMax = int(queryAnneeMax)
+            annees = range(anneeMin, anneeMax + 1)
+
+            total_achats = achat.objects.filter(dateAchat__year__range=(anneeMin, anneeMax))\
+                .aggregate(total=Sum('montantTotal'))['total'] or 0
+
+            previous_year_start = timezone.now() - timezone.timedelta(days=365)
+            total_previous_year = achat.objects.filter(dateAchat__year__range=(previous_year_start.year, previous_year_start.year))\
+                .aggregate(total=Sum('montantTotal'))['total'] or 0
+
+            taux_evolution = ((total_achats - total_previous_year) / total_previous_year) * 100 if total_previous_year > 0 else 100
+            top_fournisseurs = achat.objects.filter(dateAchat__year__range=(anneeMin, anneeMax))\
+                .values('fournisseur__nomF')\
+                .annotate(total_achats=Sum('montantTotal'))\
+                .order_by('-total_achats')[:5]
+
+            return render(request, 'tableauxDeBord/tableauachat.html', {
+                'taux_evolution': taux_evolution,
+                'top_fournisseurs': top_fournisseurs,
+                'annees': annees,
+            })
+
+    return render(request, 'tableauxDeBord/tableauachat.html')

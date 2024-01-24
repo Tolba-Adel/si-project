@@ -1,6 +1,6 @@
 from django.db.models import fields
 from django import forms
-from .models import client,fournisseur,centre,employe,produit,venteProduit,paiementCred,matierePremiere,achat,TransfertMatierePremiere,ReglementFournisseur,VenteMatierePremiere,PaiementCredit
+from .models import client,fournisseur,centre,employe,produit,venteProduit,paiementCred,matierePremiere,achat,TransfertMatierePremiere,ReglementFournisseur,VenteMatierePremiere,PaiementCredit,Stock
 import calculation 
 from django_select2 import forms as s2forms
 
@@ -14,7 +14,7 @@ centre_possibles=[
 class clientForm(forms.ModelForm):
     class Meta:
         model = client
-        fields="__all__"
+        exclude=['credit']
         labels = {
             'nomCl': 'Nom',
             'prenomCl': 'Prénom',
@@ -25,7 +25,7 @@ class clientForm(forms.ModelForm):
 class fournisseurForm(forms.ModelForm):
     class Meta:
         model = fournisseur
-        fields="__all__"
+        exclude=['solde']
         labels = {
             'nomF': 'Nom',
             'prenomF': 'Prénom',
@@ -78,11 +78,11 @@ class paiementCredForm(forms.ModelForm):
 
 class matierePremiereForm(forms.ModelForm):
     class Meta:
-        model=produit
-        fields="__all__"
-        lables={
-            'nomP':'Nom produit',
-            'qte':'Quantité',
+        model=matierePremiere
+        fields=['nomMP','TypeMP']
+        labels={
+            'nomMP':'Nom matiere premiere',
+            'TypeMP':'Type',
         }
 
 class fournisseurWidget(s2forms.ModelSelect2Widget):
@@ -109,12 +109,12 @@ class AchatmatierePremiereForm(forms.ModelForm):
 
 class matierestransfertWidget(s2forms.ModelSelect2Widget):
     search_fields = [
-        "nomMP__icontains",
+        "matieresAchetes__nomMP__icontains",
     ]
 class TransfertmatierePremiereForm(forms.ModelForm):
     centre=centre.numeroC
-    # PrixUTA = forms.FloatField(widget=forms.HiddenInput(),label='Cout de Transfert',disabled=False, required=False  )
-    # CoutTrf=forms.IntegerField(widget=forms.HiddenInput(),label='Cout de Transfert',disabled=False, required=False)
+    PrixUTA = forms.FloatField(widget=forms.HiddenInput(),label='Cout de Transfert',disabled=False, required=False  )
+    CoutTrf=forms.IntegerField(widget=forms.HiddenInput(),label='Cout de Transfert',disabled=False, required=False)
     class Meta:
         model = TransfertMatierePremiere
         fields="__all__"
@@ -203,3 +203,5 @@ def __init__(self, *args, **kwargs):
     self.fields['credit'].widget.attrs['readonly'] = True
     self.fields['client'].initial = None
     self.fields['client'].widget.attrs['class'] = 'client-dropdown'
+
+    

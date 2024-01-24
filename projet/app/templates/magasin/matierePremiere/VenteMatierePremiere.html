@@ -1,13 +1,14 @@
 <!DOCTYPE html>
   <html>
     <head>
-      <title></title>
+      <title>Vente Matiere Premiere</title>
       {{ form.media.css }}
       <style>
          select {width: 10%}
       </style>
     </head>
     <body>
+      <h3>Vendre Matiere Premiere</h3>
       <form method="POST">
         {% csrf_token %}  
         {{form.as_p}}
@@ -16,8 +17,17 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         {{ form.media.js }}
       <p>{{message}}</p>
+      <div style="position: fixed; top: 85px; left: 16.5%; text-align: center; padding: 8px;">
+        <a href="{% url 'addCl' %}" style="text-decoration: none;">
+            <button style="padding: 4px 10px;">Ajouter Client</button>
+        </a>
+    </div>
+      <div style="position: fixed; top: 123px; left: 19%; text-align: center; padding: 8px;">
+        <a href="{% url 'addMPr' %}" style="text-decoration: none;">
+            <button style="padding: 4px 10px;">Ajouter matiere Premiere</button>
+        </a>
+    </div>
       
-      </script>
       <a href="{% url 'liste_VentematierePremieres' %}">
         <button>Journal Vente Matière Premières</button>
       </a>  

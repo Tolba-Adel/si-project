@@ -32,10 +32,12 @@ urlpatterns = [
     path('produit/delete/<int:pk>',views.supprimer_produit, name="deletePrd"),
     #Centre
     path('centre',views.afficher_centres,name='liste_centres'),
+   
     #Matiere Premiere
     path('matierePremiere',views.afficher_matierePremieres,name='liste_matierePremieres'),
     path('matierePremiere/edit/<int:pk>/',views.modifier_matierePremiere, name="editMP"),
     path('matierePremiere/delete/<int:pk>',views.supprimer_matierePremiere, name="deleteMP"),
+    path('matierePremiere/ajouter',views.ajouter_matierePremiere, name="addMPr"),
     #Achat Matiere Premiere
     path('AchatMatierePremiere',views.Achat_matierePremiere, name="addMP"),
     path('JournalAchatMatierePremiere',views.afficher_JournalAchatMP,name="liste_AchatmatierePremieres"),
@@ -43,9 +45,11 @@ urlpatterns = [
     path('JournalAchatMatierePremiere/delete/<int:pk>',views.supprimer_AchatmatierePremiere, name="deleteAchatMP"),
     path('ReglementFournisseur',views.ReglementAchat_matierePremiere,name="ReglerAchatMP"),
     path('get_solde/', views.get_solde, name='get_solde'),
+    
     #Transfert Matiere Premiere
     path('TransfertMatierePremiere',views.Transfert_matierePremiere, name="TransMP"),
     path('JournalTransfertMatierePremiere',views.afficher_JournalTransfertMP, name="liste_TransfertmatierePremieres"),
+    
     #Vente Matiere Premiere
     path('VenteMatierePremiere',views.Vente_MatierePremiere, name="VenteMP"),
     path('JournalVenteMatierePremiere',views.afficher_JournalVenteMP, name="liste_VentematierePremieres"),
@@ -53,9 +57,9 @@ urlpatterns = [
     path('JournalVenteMatierePremiere/delete/<int:pk>',views.supprimer_VentematierePremiere, name="deleteVenteMP"),
     path('PaiementCredit',views.PaiementCredit_matierePremiere,name="PaiementCredMP"),
     path('get_credit/', views.get_credit, name='get_credit'),
+    
     #Etat De Stock
-    path('EtatDeStock',views.afficher_etatStock, name="EtatSock"),
-
+    path('EtatDeStock',views.afficher_etatStock, name="EtatStock"),
 
     #Centre Section
     path('sectionCentre/<int:centre_id>',views.section_centre,name="section_centre"),
@@ -87,4 +91,5 @@ urlpatterns = [
     #Tableux de Bord Section
     path('analyseVente',views.analyse_vente,name="analyse_vente"),
     path('tableauxDeBord/<int:centre_id>',views.afficher_tableaux,name="tableaux_de_bord"),
+    path('tableauxDeBordachat',views.afficher_tableaux_achat,name="tableaux_de_bordach"),
 ]

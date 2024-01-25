@@ -199,11 +199,11 @@ def afficher_matierePremieres(request):
     if request.method == "GET":
         query = request.GET.get('recherche')
         if query:
-            matierePremieres=matierePremiere.objects.filter(nomMP__icontains=query)
+            produits=produit.objects.filter(nomP__icontains=query)
         else:
             matierePremieres=matierePremiere.objects.all()
-        return render(request,"magasin/matierePremiere/matierePremiere.html",{'matierePremieres':matierePremieres})    
-
+        return render(request,"magasin/matierePremiere/matierePremiere.html",{'matierePremieres':matierePremieres})
+    
 def modifier_matierePremiere(request,pk):
     mp=matierePremiere.objects.get(id=pk)
     if request.method == "POST":

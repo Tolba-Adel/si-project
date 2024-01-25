@@ -1,5 +1,43 @@
 {% load static %}
-<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 0;
+}
+h1 {
+    margin-bottom: 20px;
+}
+form {
+    margin-bottom: 20px;
+}
+label {
+    margin-right: 10px;
+}
+button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #0056b3;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+th {
+    background-color: #f2f2f2;
+}
+</style>
 
 <h1>Liste des Transferts reçu par Centre {{centre_id}}</h1>
 

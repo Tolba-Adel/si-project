@@ -118,12 +118,12 @@ class ReglementFournisseur(models.Model):
     
 class TransfertMatierePremiere(models.Model):
     # codeTransfert=models.AutoField(primary_key=True)
-    dateTransfert = models.DateTimeField(default=datetime.now)
-    centre = models.ForeignKey(centre, on_delete=models.CASCADE)
-    MatieresTransferes = models.ForeignKey(achat, on_delete=models.CASCADE)
-    QteTrf = models.IntegerField()
-    PrixUTA = models.FloatField(default=0)
-    CoutTrf = models.IntegerField(default=0) 
+    dateTransfert=models.DateTimeField(default=datetime.now)
+    centre=models.ForeignKey(centre,on_delete=models.CASCADE)
+    MatieresTransferes=models.ForeignKey(achat,on_delete=models.CASCADE)
+    QteTrf=models.IntegerField()
+    PrixUTA=models.FloatField(default=0)
+    CoutTrf=models.IntegerField(default=0) 
     def __str__(self):
         return f"Transfert #{self.id}"
     

@@ -3,7 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Analyse Des Achats</title>
+    <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 20px;
+                padding: 0;
+            }
+            h1 {
+                margin-bottom: 20px;
+            }
+            form {
+                margin-bottom: 20px;
+            }
+            label {
+                margin-right: 10px;
+            }
+            button {
+                padding: 5px 10px;
+                background-color: #007bff;
+                color: #fff;
+                border: none;
+                cursor: pointer;
+            }
+            button:hover {
+                background-color: #0056b3;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            th, td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+    </style>
 </head>
 <body>
     <h1>Analyse Des Achats</h1>
@@ -26,7 +66,6 @@
         </h2>
     {% endif %}
     <p>Taux d'évolution Des Achats = {{ taux_evolution }}%</p>
-
     <h2>Top Fournisseurs</h2>
     {% if top_fournisseurs %}
     <table border="1px">
@@ -51,6 +90,7 @@
     <p>Aucun Fournisseur à afficher</p>
     {% endif %}
 
+</body>
     <br />
     <a href="/tableauxDeBord">
         <button>Retourner</button>
